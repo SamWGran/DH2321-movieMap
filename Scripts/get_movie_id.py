@@ -1,6 +1,6 @@
 import requests
 import json
-
+import sys
 
 # Query
 url = "https://api.themoviedb.org/3/discover/movie?api_key=8bd7c4236fae31732aa5b61ce6dbc465"
@@ -12,25 +12,30 @@ url += "&vote_count.gte=10"
 url += "&primary_release_date.gte=2018-01-01"
 url += "&primary_release_date.lte=2022-01-01"
 
-movies = []
-page = 1
-total_pages = 2
+response = requests.get(url)
+response.raise_for_status()
 
-while page < total_pages:
-    print("Accessing page #", page, sep="")
-    page_url = url + "&page=" + str(page)
-    response = requests.get(page_url)
-    if response.status_code == 200:
-        json_data = response.json()
-        page = json_data["page"]+1
-        total_pages = json_data["total_pages"]
-        for movie in json_data["results"]:
-            movies.append(movie["id"])
-    else:
-        print("Error fetching page #", page, sep="")
-        print("HTTP status code ", response.status_code, sep="")
-        exit()
+response_json = response.json()
+page = response_json["page"]
+total_pages = response_json["total_pages"]
+movie_ids = []
 
 f = open("movie_ids.txt", "w")
-print(movies, sep = ", ", file=f)
-f.close() 
+
+for i in range(page, total_pages):
+    print("Accessing page #", i, sep="")
+    response = requests.get(f'{url}&page={i}')
+
+    if response.status_code == 200:
+        response_json = response.json()
+        movies = [movie["id"] for movie in response_json["results"]]
+        if i < total_pages-1:
+            print(*movies, sep = ", ", end=", ", file=f)
+        else:
+            print(*movies, sep = ", ", end="", file=f)
+        
+    else:
+        print("Error fetching page #", i, sep="")
+        print("HTTP status code ", response.status_code, sep="")
+
+f.close()
