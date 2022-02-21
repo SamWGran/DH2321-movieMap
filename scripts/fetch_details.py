@@ -18,38 +18,33 @@ def fetch_movie_details(session, movie_id, counter):
     with session.get(url) as response:
         if response.status_code == 200:
             json_data = response.json()
-            if (json_data["budget"] == 0 or json_data["revenue"] == 0): 
+            if (json_data["budget"] == 0 or json_data["revenue"] == 0):
                 return None
+            del json_data["adult"]
+            del json_data["backdrop_path"]
+            del json_data["belongs_to_collection"]
+            for genre in json_data["genres"]:
+                del genre["id"]
+            del json_data["homepage"]
+            del json_data["imdb_id"]
+            del json_data["original_title"]
+            del json_data["overview"]
+            del json_data["poster_path"]
+            del json_data["production_countries"]
+            for company in json_data["production_companies"]:
+                del company["logo_path"]
+            del json_data["spoken_languages"]
+            del json_data["status"]
+            del json_data["tagline"]
+            del json_data["video"]
 
-            csv = "\n"
-            csv += f'{json_data["id"]},'
+            return json_data
 
-            csv += "\""
-            title = json_data["title"].replace("\"", "\"\"")
-            csv += f'{title}'
-            csv += "\","
-            
-            csv += f'{json_data["budget"]},'
-            csv += f'{json_data["revenue"]},'
-            
-            csv += ";".join([genres["name"] for genres in json_data["genres"]])
-            csv += ","
-
-            csv += f'{json_data["original_language"]},'
-            csv += f'{json_data["release_date"]},'
-            csv += f'{json_data["popularity"]},'
-            csv += f'{json_data["vote_average"]},'
-            csv += f'{json_data["vote_count"]},'
-            csv += f'{json_data["runtime"]}'
-
-            return csv
-        else: 
             print("Failed to fetch:", url)
             return None
 
 async def async_fetch():
     with open("movie_details.txt", "w") as output_file:
-        output_file.write("id,title,budget,revenue,genres,original_language,release_date,popularity,vote_average,vote_count,runtime")
         with ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS) as threads:
             with requests.session() as session:
                 event_loop = asyncio.get_event_loop()
@@ -65,8 +60,8 @@ async def async_fetch():
                 for details in await asyncio.gather(*tasks) :
                     counter += 1
                     if details is not None:
-                        print(f'Processed movie #{counter} : {details.split(",")[1]}')
-                        output_file.write(details)
+                        print(f'Processed movie #{counter} : {details["title"]}')
+                        json.dump(details, output_file)
 
 print("Fetching movies")
 event_loop = asyncio.get_event_loop()
