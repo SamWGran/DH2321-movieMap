@@ -23,12 +23,22 @@ export default function Krapmap({ data, width, height }) {
         .append('rect')
         .attr('width', (d) => 100)
         .attr('height', (d) => 100)
-        .attr('fill', (d) => d3.interpolateRgb(d.color, '#fff')(0.3));
+        .attr('fill', (d) => d3.interpolateRgb(d.color, '#fff')(0.3))
+        .append('title')
+        .text((d) => `Color is ${d.color}`);
     }
 
     useEffect(() => {
         renderKrapmap();
     }, [data]);
+
+    Array.from(document.getElementsByClassName("krap")).forEach((el) => {
+        //alert("hello");
+        el.addEventListener("mouseover", () => {
+            alert("LOL");
+            console.log("lol");
+        }, false);
+    });
     
     return (
     <div>
