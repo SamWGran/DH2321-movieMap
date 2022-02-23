@@ -1,4 +1,4 @@
-const movies = [
+const dummyMovies = [
     {
         "budget": 200000000,
         "genres": [
@@ -25728,4 +25728,4 @@ const movies = [
     }
 ];
 
-export default movies;
+export default dummyMovies;
