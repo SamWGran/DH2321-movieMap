@@ -90,10 +90,8 @@ function makeTreemapLayout(width, height) {
     .paddingTop(21)
     .size([width, height])
     .round(true)
-    .tile(d3.treemapBinary);
+    .tile(d3.treemapSquarify);
 }
-
-
 
 // Movie helper functions
 function movieNormalizedProfitRatio(node) {
@@ -116,6 +114,7 @@ class Moviemap extends Component {
   constructor(props) {
     super(props);
     
+    // Try changing to test different setups.
     this.state = {
       sortKey: movieNormalizedProfitFlat,
       sumKey: movieNormalizedProfitFlat,
@@ -125,9 +124,9 @@ class Moviemap extends Component {
       grouping: movieGenreNames,
       trimming: identity,
       
-      startColor: "green",
+      startColor: "white",
       centerColor: "grey",
-      finalColor: "red",
+      finalColor: "blue",
       
       movies: dummyMovies,
 
@@ -188,8 +187,8 @@ class Moviemap extends Component {
   renderTooltip() {
     const mx = this.state.mousePositionX;
     const my = this.state.mousePositionY;
-    const w = 200;
-    const h = 500;
+    const w = 350;
+    const h = 250;
     return <g 
       key={this.props.id+"-tooltip"} 
       transform={`translate(${mx+100}, ${my-2})`} 
@@ -216,9 +215,17 @@ class Moviemap extends Component {
     const h = node.y1 - node.y0;
     const gradient = this.genGradient();
     const color = gradient(this.state.gradientKey(node.data));
+    const ifontSize = w/(node.data.title.length*0.7);
+    const fontSize = Math.min(...[16, h-8, ifontSize]);
     let title = <g> </g>;
     if (w > 10 && h > 10) {
-      title = <text x={x+4} y={y+16}>{node.data.title}</text>;
+      title = <text 
+          x={x+4} 
+          y={y+fontSize+4}
+          fontSize={`${fontSize}`}
+        >
+          {node.data.title}
+        </text>;
     }
     return <g id={"movie-"+node.data.id} key={index}>
       <rect 
