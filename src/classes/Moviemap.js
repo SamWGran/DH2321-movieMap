@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as d3 from 'd3';
 import dummyMovies from './moviemapData';
-import { index, treemap } from 'd3';
+import ReactSlider from 'react-slider';
 
 function identity(m) {
   return m;
@@ -120,13 +120,16 @@ class Moviemap extends Component {
       sumKey: movieNormalizedProfitFlat,
       gradientKey: movieNormalizedProfitFlat,
 
-      filtering: (m => m.vote_average > 8),
+      filtering: (m) => true,
       grouping: movieGenreNames,
       trimming: identity,
       
       startColor: "white",
       centerColor: "grey",
       finalColor: "blue",
+
+      filter_max_budget: MAX_BUDGET,
+      filter_min_budget: MIN_BUDGET,
       
       movies: dummyMovies,
 
@@ -144,8 +147,11 @@ class Moviemap extends Component {
   }
 
   genTreemap() {
+    const filter = (m) => {
+      return m.budget >= this.state.filter_min_budget && m.budget <= this.state.filter_max_budget;
+    };
     const treeFactory = makeTreeFactory(
-      this.state.filtering, 
+      filter,
       this.state.grouping, 
       this.state.trimming
     );
@@ -259,7 +265,7 @@ class Moviemap extends Component {
     </g>;
   }
 
-  render(){
+  render() {
     const treemap = this.genTreemap();
 
     return <div 
@@ -267,7 +273,7 @@ class Moviemap extends Component {
       key={this.props.id} 
       onMouseMove={(e) => this.setMousePosition(e.clientX, e.clientY)} 
     >
-      <svg 
+      <svg
         key={this.props.id+"-treemap"}
         width={this.props.width} 
         height={this.props.height}
@@ -275,6 +281,19 @@ class Moviemap extends Component {
         {treemap.children.map((v, i) => this.renderCategoryNode(v, i))}
         {this.renderTooltip()}
       </svg>
+      <ReactSlider
+        className="horizontal-slider"
+        thumbClassName="example-thumb"
+        trackClassName="example-track"
+        renderThumb={(props, state) => <div><div>{state.value[state.index]}</div><div {...props}/></div>}
+        max={MAX_BUDGET}
+        min={MIN_BUDGET}
+        defaultValue={[MIN_BUDGET, MAX_BUDGET]}
+        onAfterChange={(e) => {
+          this.setState({filter_min_budget: e[0]});
+          this.setState({filter_max_budget: e[1]});
+        }}
+      />
     </div>
   }
 }
