@@ -8,9 +8,9 @@ import deepEquals from 'deep-equals'
 // useState = State of component.
 
 // Processing movie data.
-function minMax(keyFunction, array) {
-  const max = Math.max(...array.map(keyFunction))
-  const min = Math.min(...array.map(keyFunction))
+function findMinMax(array) {
+  const max = Math.max(...array)
+  const min = Math.min(...array)
   return [min, max]
 }
 
@@ -34,7 +34,7 @@ function gradient3(start, center, end) {
 }
 
 function normalize(array) {
-  const [min, max] = minMax(m=>m, array)
+  const [min, max] = findMinMax(array)
   return array.map(m => (m-min)/(max-min))
 }
 
@@ -42,10 +42,9 @@ const defaultMovies = dummyMovies
 const defaultGradient = gradient3("orange", "yellow", "green")
 
 function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
-  // Base data
+  
   const [data, setData] = useState(defaultMovies)
   const [gradient, setGradient] = useState(() => defaultGradient)
-  
 
   const [budgetRange, setBudgetRange] = useState([-Infinity, Infinity])
   const [profitRange, setProfitRange] = useState([-Infinity, Infinity])
@@ -58,39 +57,37 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
   const [groupKey, setGroupKey] = useState("genres")
   
   // Generate additional data fields.
-  const extrapolatedData = useMemo(() => {
-    return data.map(m => {
-      return {
-        profit: m.revenue-m.budget,
-        profitRatio: m.revenue/m.budget,
-        ...m
-      }
-    })
-  }, [
-    data
-  ])
+  const derivedData = useMemo(() => {
+    return data.map((m) => { return {
+      profit: m.revenue-m.budget,
+      profitRatio: m.revenue/m.budget,
+      ...m
+    }})
+  }, [data])
 
-  const budgetLimits      = useMemo(() => minMax(m => m.budget, extrapolatedData), [extrapolatedData])
-  const revenueLimits     = useMemo(() => minMax(m => m.revenue, extrapolatedData), [extrapolatedData])
-  const profitLimits      = useMemo(() => minMax(m => m.profit, extrapolatedData), [extrapolatedData])
-  const profitRatioLimits = useMemo(() => minMax(m => m.profitRatio, extrapolatedData), [extrapolatedData])
+  // Find limits for the data.
+  const budgetLimits      = useMemo(() => findMinMax(derivedData.map(m => m.budget)), [derivedData])
+  const revenueLimits     = useMemo(() => findMinMax(derivedData.map(m => m.revenue)), [derivedData])
+  const profitLimits      = useMemo(() => findMinMax(derivedData.map(m => m.profit)), [derivedData])
+  const profitRatioLimits = useMemo(() => findMinMax(derivedData.map(m => m.profitRatio)), [derivedData])
 
-  // Filter data
+  // Filter data.
   const movieData = useMemo(() => {
     const pred = (m) => inRange(m.profit, profitRange)
       && inRange(m.budget, budgetRange)
       && inRange(m.revenue, revenueRange)
       && inRange(m.profitRatio, profitRatioRange)
-    return extrapolatedData.filter(pred)
+    return derivedData.filter(pred)
   }, [
-    extrapolatedData,
+    derivedData,
     budgetRange,
     profitRange,
     revenueRange,
     profitRatioRange,
   ])
 
-  // Assign color to each data point
+  // Assign color to each data point 
+  // Currently based on filtered data.
   const movieColors = useMemo(() => {
     return normalize(movieData.map(m => m[gradKey])).map(gradient)
   }, [
@@ -99,37 +96,28 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
   ])
 
   const treemap = useMemo(() => {
-    const indices = movieData.map((d, i) => i)
-
-    // Generate groups and add to root.
-    const groupsFn = i => [movieData[i][groupKey]].flat()
-    let gt = []
-    indices.forEach(i => groupsFn(i).forEach(g => { 
-      let index = gt.findIndex(m => deepEquals(m.group, g)); 
-      if (index == -1) {
-        gt.push({group: g, children: []})
-        index = gt.length-1
-      }
-      gt[index].children.push(i)
-    }))
-    const groups = gt.map(m => {return { children: m.children, ...m.group }})
-
-    const root = {
-      name: "root",
-      children: groups,
-    }
     
-    // Define sorting function.
-    const sortLeaf = i => movieData[i][sortKey]
-    const sortNode = n => (n.children) ? d3.sum(n.children.map(sortNode)) : sortLeaf(n.data)
-    const sort = (a, b) => sortNode(b) - sortNode(a)
-
-    // Define size function.
-    const sizeLeaf = i => movieData[i][sizeKey]
-    const sizeNode = n => (n.children) ? 0 : sizeLeaf(n)
-    const size = n => sizeNode(n)
+    // Restructure data into a tree
+    const groupsOf = i => [movieData[i][groupKey]].flat()
+    let groupArray = []
+    movieData.forEach((_, i) => {
+      groupsOf(i).forEach(g => {
+        const index = groupArray.findIndex(m => deepEquals(m.group, g));
+        const found = index == -1
+        if (found) {
+          groupArray[index].children.push(i)          
+        } else {
+          groupArray.push({ group: g, children: [i]})
+        }
+      })
+    })
+    const groups = groupArray.map(m => Object.create(m.group, {children: m.children}))
+    const root = { name: "root", children: groups }
     
-    const tree = d3.hierarchy(root).sum(size).sort(sort)
+    // Assign D3 mapping functions
+    const order = n => (n.children) ? d3.sum(n.children.map(order)) : movieData[n.data][sortKey]
+    const sort = (a, b) => order(b) - order(a)
+    const size = n => (n.children) ? 0 : movieData[n][sizeKey]
     const layout = d3
       .treemap()
       .paddingInner(0)
@@ -139,9 +127,12 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
       .size([width, height])
       .round(true)
       .tile(d3.treemapSquarify)
-    
+    const tree = d3
+      .hierarchy(root)
+      .sum(size)
+      .sort(sort)
     return layout(tree);
-  }, 
+  },
   [
     movieData,
     sortKey, 
