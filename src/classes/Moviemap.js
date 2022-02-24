@@ -45,7 +45,10 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
   // Base data
   const [data, setData] = useState(defaultMovies)
   const [gradient, setGradient] = useState(() => defaultGradient)
-  
+
+  const [mousePosition, setMousePosition] = useState([0, 0])
+  const [tooltipIndex, setTooltipIndex] = useState(0)
+  const [tooltipVisibility, setTooltipVisibility] = useState("hidden")
 
   const [budgetRange, setBudgetRange] = useState([-Infinity, Infinity])
   const [profitRange, setProfitRange] = useState([-Infinity, Infinity])
@@ -151,6 +154,10 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
 
   // Rendering
   const treemapRender = useMemo(() => {
+    if (!treemap.children) {
+      return <></>
+    }
+
     return treemap.children.map((cat, i) => {
       const children = cat.children.map((child, i) => { 
         const title = movieData[child.data].title
@@ -158,7 +165,16 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
         const height = child.y1-child.y0
         const scaledFs = width/(title.length*0.7)
         const fontSize = Math.min(...[20, height-8, scaledFs])
-        return <g id={"movie-"+i} key={i}>
+        return <g 
+          id={"movie-"+i} 
+          key={i}
+
+          onMouseEnter={(e) => { 
+            setTooltipIndex(child.data) 
+            setTooltipVisibility("visible") 
+          }} 
+          onMouseLeave={(e) => setTooltipVisibility("hidden")}
+          >
           <rect
             className='movie-node'
             x={child.x0}
@@ -167,8 +183,6 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
             height={height}
             fill={movieColors[i]}
             stroke="black"
-            onMouseEnter={(e) => onMovieEnter(movieData[child.data])} 
-            onMouseLeave={(e) => onMovieLeave(movieData[child.data])}
           />
           <text x={child.x0+4} y={child.y0+fontSize+4} fontSize={fontSize}>
             {(width > 10 && height > 10) ? movieData[child.data].title : ""}
@@ -186,14 +200,41 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
     movieColors
   ])
   
-  if (!treemap.children) {
-    return <><text>no movies</text></>
-  }
+  const tooltipRender = useMemo(() => {
+    if (!movieData[tooltipIndex]) {
+      return <g><text x ={200} y={300} fontSize={64}>No movies</text></g>
+    }
+    const mx = mousePosition[0]-250
+    const my = mousePosition[1]
+    const w = 350
+    const h = 250
+    return <g
+      key={id+"-tooltip"} 
+      transform={`translate(${mx}, ${my})`} 
+      visibility={tooltipVisibility}
+    >
+      <rect
+        id="tooltip"
+        width={w} 
+        height={h} 
+        fill="white" 
+        strokeWidth="2" 
+        stroke="black" 
+      />
+      <text x={4} y={16}>
+        <tspan>{movieData[tooltipIndex].title}</tspan>
+        <tspan x={4} dy='2em'>{`Budget ${movieData[tooltipIndex].budget}`}</tspan>
+        <tspan x={4} dy='1em'>{`Revenue ${movieData[tooltipIndex].revenue}`}</tspan>
+        <tspan x={4} dy='1em'>{`Profit ${movieData[tooltipIndex].profit}`}</tspan>
+        <tspan x={4} dy='1em'>{`Profit ${movieData[tooltipIndex].profitRatio*100}%`}</tspan>
+      </text>
+    </g>
+  }, [mousePosition, movieData, tooltipIndex, tooltipVisibility])  
 
   return <div className='flex-container'>
     <div className='vertical-flex'>
       <div>
-        <text>Budget</text>
+        <text>{`Budget ${budgetRange[0]} ${budgetRange[1]}`}</text>
         <ReactSlider
           className="horizontal-slider"
           thumbClassName="example-thumb"
@@ -205,7 +246,7 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
         />
       </div>
       <div>
-        <text>Profit</text>
+        <text>{`Profit ${profitRange[0]} ${profitRange[1]}`}</text>
         <ReactSlider
           className="horizontal-slider"
           thumbClassName="example-thumb"
@@ -217,7 +258,7 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
         />
       </div>
       <div>      
-        <text>Revenue</text>
+        <text>{`Revenue ${revenueRange[0]} ${revenueRange[1]}`}</text>
         <ReactSlider
           className="horizontal-slider"
           thumbClassName="example-thumb"
@@ -234,8 +275,10 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
         id={id+"-treemap"} 
         width={width} 
         height={height}
+        onMouseMove={(e) => setMousePosition([e.clientX, e.clientY])}
         >
         {treemapRender}
+        {tooltipRender}
       </svg>
     </div>
   </div>
@@ -268,29 +311,7 @@ setMousePosition(x, y) {
   this.setState({mousePositionY: y})
 }
 
-  renderTooltip() {
-    const mx = this.state.mousePositionX
-    const my = this.state.mousePositionY
-    const w = 350
-    const h = 250
-    return <g 
-      key={this.props.id+"-tooltip"} 
-      transform={`translate(${mx+100}, ${my-2})`} 
-      visibility={this.state.tooltipVisibility}
-    >
-      <rect
-        id="tooltip"
-        width={w} 
-        height={h} 
-        fill="white" 
-        strokeWidth="2" 
-        stroke="black" 
-      />
-      <text x={4} y={16}>
-        {this.state.tooltipMovie.title}
-      </text>
-    </g>
-  }
+
   { 
     this.setTooltip(node.data)
     this.showTooltip()
