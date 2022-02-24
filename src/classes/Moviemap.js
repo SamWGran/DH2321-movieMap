@@ -55,8 +55,8 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
   const [revenueRange, setRevenueRange] = useState([-Infinity, Infinity])
   const [profitRatioRange, setProfitRatioRange] = useState([-Infinity, Infinity])
   
-  const [sortKey, setSortKey]   = useState("budget")
-  const [sizeKey, setSizeKey]   = useState("budget")
+  const [sortKey, setSortKey]   = useState("profitRatio")
+  const [sizeKey, setSizeKey]   = useState("profitRatio")
   const [gradKey, setGradKey]   = useState("budget")
   const [groupKey, setGroupKey] = useState("genres")
   
@@ -187,6 +187,9 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
           <text x={child.x0+4} y={child.y0+fontSize+4} fontSize={fontSize}>
             {(width > 10 && height > 10) ? movieData[child.data].title : ""}
           </text>
+          <text x={child.x0+4} y={child.y0+(fontSize*2)+4} fontSize={fontSize}>
+            {(width > 10 && height > 10) ? `${Math.round(movieData[child.data].profitRatio*100)}%` : ""}
+          </text>
         </g>
       })
       return <g key={i} id={'category-'+cat.data.name}>
@@ -273,7 +276,7 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
     <div>
       <svg
         id={id+"-treemap"} 
-        width={width} 
+        width={width}
         height={height}
         onMouseMove={(e) => setMousePosition([e.clientX, e.clientY])}
         >
