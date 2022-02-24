@@ -243,13 +243,6 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
 
 
 /*
-
-  const budgetLimits      = useMemo(() => minMax(m => m.budget, movies),           [movies])
-  const revenueLimits     = useMemo(() => minMax(m => m.revenue, movies),          [movies])
-  const profitLimits      = useMemo(() => minMax(m => m.revenue-m.budget, movies), [movies])
-  const profitRatioLimits = useMemo(() => minMax(m => m.revenue/m.budget, movies), [movies])
-
-
 tooltipVisibility: "hidden",
 tooltipMovie: dummyMovies[0],
 
@@ -303,51 +296,6 @@ setMousePosition(x, y) {
     this.showTooltip()
   }
     onMouseMove={(e) => this.setMousePosition(e.clientX, e.clientY)} 
-  
-
-*/
-/*
-function MovieNodeSVG({className, key, id, }) {
-  const {x0, y0, x1, y1, data, } = props;
-  const x = props.x0
-  const y = props.y0
-  const w = props.x1 - props.x0
-  const h = props.y1 - props.y0
-  const title = props.data
-  
-  const ifontSize = w/(title.length*0.7)
-  const fontSize = Math.min(...[16, h-8, ifontSize])
-  let text = ""
-  if (w > 10 && h > 10) {
-    text = title
-  }
-
-  return <g id={"movie-"+movieIndex} key={props.key}>
-    <rect
-      className='movie-node'
-      x={x} 
-      y={y} 
-      width={w} 
-      height={h} 
-      fill={fill}
-      stroke="black"
-      onMouseEnter={(e) => onMouseEnter(movieIndex)} 
-      onMouseLeave={(e) => onMouseLeave(movieIndex)}
-    />
-    <text x={x+4} y={y+fontSize+4} fontSize={fontSize}>
-      {text}
-    </text>
-  </g>
-}
-
-function CategoryNode({key, id, title, x, y, width, height, children}) {
-  const children = children.map((child, i) => <MovieNode key={i} {...child}/>)
-
-  return <g key={key} id={id}>
-    <text id={id+'-title'} x={x+6} y={y+14}>{title}</text>
-    <g id={id+'-movies'}>{children}</g>
-  </g>
-}
 */
 
 export default Moviemap 
