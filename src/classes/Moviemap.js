@@ -52,9 +52,9 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
   const [revenueRange, setRevenueRange] = useState([-Infinity, Infinity])
   const [profitRatioRange, setProfitRatioRange] = useState([-Infinity, Infinity])
   
-  const [sortKey, setSortKey] = useState("budget")
-  const [sizeKey, setSizeKey] = useState("budget")
-  const [gradKey, setGradKey] = useState("budget")
+  const [sortKey, setSortKey]   = useState("budget")
+  const [sizeKey, setSizeKey]   = useState("budget")
+  const [gradKey, setGradKey]   = useState("budget")
   const [groupKey, setGroupKey] = useState("genres")
   
   // Generate additional data fields.
@@ -171,7 +171,7 @@ function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
             onMouseLeave={(e) => onMovieLeave(movieData[child.data])}
           />
           <text x={child.x0+4} y={child.y0+fontSize+4} fontSize={fontSize}>
-            {(width > 10 && height > 10) ? "" : child.data.title}
+            {(width > 10 && height > 10) ? movieData[child.data].title : ""}
           </text>
         </g>
       })
