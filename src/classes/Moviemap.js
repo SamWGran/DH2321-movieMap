@@ -1,200 +1,285 @@
-import React, { Component } from 'react';
-import * as d3 from 'd3';
-import dummyMovies from './moviemapData';
-import ReactSlider from 'react-slider';
+import React, { useState, useMemo, useCallback } from 'react'
+import * as d3 from 'd3'
+import dummyMovies from './moviemapData'
+import ReactSlider from 'react-slider'
+import deepEquals from 'deep-equals'
 
-function identity(m) {
-  return m;
-}
+// useMemo = Stored Calculations.
+// useState = State of component.
 
 // Processing movie data.
-function find_min_and_max(array, keyFunction) {
-  const max = Math.max(...array.map(keyFunction));
-  const min = Math.min(...array.map(keyFunction));
-  return [min, max];
+function minMax(keyFunction, array) {
+  const max = Math.max(...array.map(keyFunction))
+  const min = Math.min(...array.map(keyFunction))
+  return [min, max]
 }
 
-const [MIN_BUDGET, MAX_BUDGET] = find_min_and_max(dummyMovies, (m) => m.budget);
-const [MIN_REVENUE, MAX_REVENUE] = find_min_and_max(dummyMovies, (m) => m.revenue);
-const [MIN_RELEASE_DATE, MAX_RELEASE_DATE] = find_min_and_max(dummyMovies, (m) => m.release_date);
-const [MIN_PROFIT_RATIO, MAX_PROFIT_RATIO] = find_min_and_max(dummyMovies, (m) => m.revenue/m.budget);
-const [MIN_PROFIT_FLAT, MAX_PROFIT_FLAT] = find_min_and_max(dummyMovies, (m) => m.revenue-m.budget);
-
-// D3 treemap helper functions.
-function makeTreeFactory(filterFunction, groupsFunction, valueFunction) {
-  return (array) => {
-    const dataMap = new Map();
-    array.filter(filterFunction).forEach((elem) => {
-      const value = valueFunction(elem);
-      const groups = groupsFunction(elem);
-      groups.forEach((group) => {
-        if (!dataMap.has(group)) { 
-          dataMap.set(group, []);
-        }
-        dataMap.get(group).push(value);
-      });
-    });
-
-    const dataArray = Array.from(dataMap.entries()).map(([key, value]) => {
-      return {
-        name: key,
-        children: value,
-      };
-    });
-    return {
-      name: "root",
-      children: dataArray,
-    };
-  };
+function inRange(value, [min, max]) {
+  return value >= min && value <= max
 }
 
-function makeNodeSorter(valueFunction) {
-  return (nodeA, nodeB) => {
-    if (nodeA.depth == 0 && nodeB.depth == 0) {
-      const aValue = nodeA.children.length;
-      const bValue = nodeB.children.length; 
-      return bValue-aValue;
-    }
-    const aValue = valueFunction(nodeA.data);
-    const bValue = valueFunction(nodeB.data);
-    return bValue-aValue;
-  };
-}
-
-function makeNodeSummer(valueFunction) {
-  return m => +valueFunction(m);
-}
-
-function makeGradient(start, center, end) {
-    const startGradient = d3.interpolateHsl(start, center);
-    const endGradient = d3.interpolateHsl(center, end);
+function gradient3(start, center, end) {
+    const startGradient = d3.interpolateHsl(start, center)
+    const endGradient = d3.interpolateHsl(center, end)
     const gradient = (v) => {
-      const value = v*2;
+      const value = v*2
       if (value < 1) {
-        return startGradient(value);
+        return startGradient(value)
       } else {
-        return endGradient(value-1);
+        return endGradient(value-1)
       }
-    };
-    return gradient;
+    }
+    return gradient
   
 }
 
-function makeTreemapLayout(width, height) {
-  return d3
-    .treemap()
-    .paddingInner(0)
-    .paddingOuter(2)
-    .paddingBottom(2)
-    .paddingLeft(4)
-    .paddingTop(21)
-    .size([width, height])
-    .round(true)
-    .tile(d3.treemapSquarify);
+function normalize(array) {
+  const [min, max] = minMax(m=>m, array)
+  return array.map(m => (m-min)/(max-min))
 }
 
-// Movie helper functions
-function movieNormalizedProfitRatio(node) {
-  return ((node.revenue/node.budget)-MIN_PROFIT_RATIO)/(MAX_PROFIT_RATIO-MIN_PROFIT_RATIO);
-}
+const defaultMovies = dummyMovies
+const defaultGradient = gradient3("orange", "yellow", "green")
 
-function movieNormalizedProfitFlat(node) {
-  return ((node.revenue-node.budget)-MIN_PROFIT_FLAT)/(MAX_PROFIT_FLAT-MIN_PROFIT_FLAT);
-}
+function Moviemap({id, width, height, title, onMovieEnter, onMovieLeave }) {
+  // Base data
+  const [data, setData] = useState(defaultMovies)
+  const [gradient, setGradient] = useState(() => defaultGradient)
+  
 
-function movieNormalizedBudget(node) {
-  return (node.budget-MIN_BUDGET)/(MAX_BUDGET-MIN_BUDGET);
-}
+  const [budgetRange, setBudgetRange] = useState([-Infinity, Infinity])
+  const [profitRange, setProfitRange] = useState([-Infinity, Infinity])
+  const [revenueRange, setRevenueRange] = useState([-Infinity, Infinity])
+  const [profitRatioRange, setProfitRatioRange] = useState([-Infinity, Infinity])
+  
+  const [sortKey, setSortKey] = useState("budget")
+  const [sizeKey, setSizeKey] = useState("budget")
+  const [gradKey, setGradKey] = useState("budget")
+  const [groupKey, setGroupKey] = useState("genres")
+  
+  // Generate additional data fields.
+  const extrapolatedData = useMemo(() => {
+    return data.map(m => {
+      return {
+        profit: m.revenue-m.budget,
+        profitRatio: m.revenue/m.budget,
+        ...m
+      }
+    })
+  }, [
+    data
+  ])
 
-function movieGenreNames(node) {
-  return node.genres.map(m => m.name);
-}
+  const budgetLimits      = useMemo(() => minMax(m => m.budget, extrapolatedData), [extrapolatedData])
+  const revenueLimits     = useMemo(() => minMax(m => m.revenue, extrapolatedData), [extrapolatedData])
+  const profitLimits      = useMemo(() => minMax(m => m.profit, extrapolatedData), [extrapolatedData])
+  const profitRatioLimits = useMemo(() => minMax(m => m.profitRatio, extrapolatedData), [extrapolatedData])
 
-class Moviemap extends Component {
-  constructor(props) {
-    super(props);
+  // Filter data
+  const movieData = useMemo(() => {
+    const pred = (m) => inRange(m.profit, profitRange)
+      && inRange(m.budget, budgetRange)
+      && inRange(m.revenue, revenueRange)
+      && inRange(m.profitRatio, profitRatioRange)
+    return extrapolatedData.filter(pred)
+  }, [
+    extrapolatedData,
+    budgetRange,
+    profitRange,
+    revenueRange,
+    profitRatioRange,
+  ])
+
+  // Assign color to each data point
+  const movieColors = useMemo(() => {
+    return normalize(movieData.map(m => m[gradKey])).map(gradient)
+  }, [
+    gradient, 
+    movieData
+  ])
+
+  const treemap = useMemo(() => {
+    const indices = movieData.map((d, i) => i)
+
+    // Generate groups and add to root.
+    const groupsFn = i => [movieData[i][groupKey]].flat()
+    let gt = []
+    indices.forEach(i => groupsFn(i).forEach(g => { 
+      let index = gt.findIndex(m => deepEquals(m.group, g)); 
+      if (index == -1) {
+        gt.push({group: g, children: []})
+        index = gt.length-1
+      }
+      gt[index].children.push(i)
+    }))
+    const groups = gt.map(m => {return { children: m.children, ...m.group }})
+
+    const root = {
+      name: "root",
+      children: groups,
+    }
     
-    // Try changing to test different setups.
-    this.state = {
-      sortKey: movieNormalizedProfitFlat,
-      sumKey: movieNormalizedProfitFlat,
-      gradientKey: movieNormalizedProfitFlat,
+    // Define sorting function.
+    const sortLeaf = i => movieData[i][sortKey]
+    const sortNode = n => (n.children) ? d3.sum(n.children.map(sortNode)) : sortLeaf(n.data)
+    const sort = (a, b) => sortNode(b) - sortNode(a)
 
-      filtering: (m) => true,
-      grouping: movieGenreNames,
-      trimming: identity,
-      
-      startColor: "white",
-      centerColor: "grey",
-      finalColor: "blue",
+    // Define size function.
+    const sizeLeaf = i => movieData[i][sizeKey]
+    const sizeNode = n => (n.children) ? 0 : sizeLeaf(n)
+    const size = n => sizeNode(n)
+    
+    const tree = d3.hierarchy(root).sum(size).sort(sort)
+    const layout = d3
+      .treemap()
+      .paddingInner(0)
+      .paddingOuter(4)
+      .paddingLeft(6)
+      .paddingTop(24)
+      .size([width, height])
+      .round(true)
+      .tile(d3.treemapSquarify)
+    
+    return layout(tree);
+  }, 
+  [
+    movieData,
+    sortKey, 
+    sizeKey, 
+    groupKey,
+  ])
 
-      filter_max_budget: MAX_BUDGET,
-      filter_min_budget: MIN_BUDGET,
-      
-      movies: dummyMovies,
-
-      mousePositionX: 0,
-      mousePositionY: 0,
-
-      tooltipVisibility: "hidden",
-      tooltipMovie: dummyMovies[0],
-    };
-
-    this.showTooltip = this.showTooltip.bind(this);
-    this.hideTooltip = this.hideTooltip.bind(this);
-    this.setTooltip = this.setTooltip.bind(this);
-    this.setMousePosition = this.setMousePosition.bind(this);
-  }
-
-  genTreemap() {
-    const filter = (m) => {
-      return m.budget >= this.state.filter_min_budget && m.budget <= this.state.filter_max_budget;
-    };
-    const treeFactory = makeTreeFactory(
-      filter,
-      this.state.grouping, 
-      this.state.trimming
-    );
-    const sortNodes = makeNodeSorter(this.state.sortKey);
-    const sumNodes = makeNodeSummer(this.state.sumKey);
-    const layout = makeTreemapLayout(this.props.width-24, this.props.height-24)
-    const tree = treeFactory(this.state.movies);
-    const root = d3
-      .hierarchy(tree)
-      .sum(sumNodes)
-      .sort(sortNodes);
-    return layout(root);
-  }
-
-  genGradient() {
-    const c1 = this.state.startColor;
-    const c2 = this.state.centerColor;
-    const c3 = this.state.finalColor;
-    return makeGradient(c1, c2, c3);
-  }
-
-  setTooltip(movie) {
-    this.setState({tooltipMovie: movie});
-  }
-
-  hideTooltip() {
-    this.setState({tooltipVisibility: "hidden"});
-  }
+  // Rendering
+  const treemapRender = useMemo(() => {
+    return treemap.children.map((cat, i) => {
+      const children = cat.children.map((child, i) => { 
+        const title = movieData[child.data].title
+        const width = child.x1-child.x0
+        const height = child.y1-child.y0
+        const scaledFs = width/(title.length*0.7)
+        const fontSize = Math.min(...[20, height-8, scaledFs])
+        return <g id={"movie-"+i} key={i}>
+          <rect
+            className='movie-node'
+            x={child.x0}
+            y={child.y0}
+            width={width}
+            height={height}
+            fill={movieColors[i]}
+            stroke="black"
+            onMouseEnter={(e) => onMovieEnter(movieData[child.data])} 
+            onMouseLeave={(e) => onMovieLeave(movieData[child.data])}
+          />
+          <text x={child.x0+4} y={child.y0+fontSize+4} fontSize={fontSize}>
+            {(width > 10 && height > 10) ? "" : child.data.title}
+          </text>
+        </g>
+      })
+      return <g key={i} id={'category-'+cat.data.name}>
+        <text x={cat.x0+6} y={cat.y0+14}>{cat.data.name}</text>
+        <g id={cat.data.name+'-movies'}>{children}</g>
+      </g>
+    })
+  }, [
+    treemap, 
+    movieData, 
+    movieColors
+  ])
   
-  showTooltip() {
-    this.setState({tooltipVisibility: "visible"});
+  if (!treemap.children) {
+    return <><text>no movies</text></>
   }
 
-  setMousePosition(x, y) {
-    this.setState({mousePositionX: x});
-    this.setState({mousePositionY: y});
-  }
+  return <div className='flex-container'>
+    <div className='vertical-flex'>
+      <div>
+        <text>Budget</text>
+        <ReactSlider
+          className="horizontal-slider"
+          thumbClassName="example-thumb"
+          trackClassName="example-track"
+          max={budgetLimits[1]}
+          min={budgetLimits[0]}
+          defaultValue={budgetLimits}
+          onAfterChange={(e) => setBudgetRange(e) }
+        />
+      </div>
+      <div>
+        <text>Profit</text>
+        <ReactSlider
+          className="horizontal-slider"
+          thumbClassName="example-thumb"
+          trackClassName="example-track"
+          max={profitLimits[1]}
+          min={profitLimits[0]}
+          defaultValue={profitLimits}
+          onAfterChange={(e) => setProfitRange(e) }
+        />
+      </div>
+      <div>      
+        <text>Revenue</text>
+        <ReactSlider
+          className="horizontal-slider"
+          thumbClassName="example-thumb"
+          trackClassName="example-track"
+          max={revenueLimits[1]}
+          min={revenueLimits[0]}
+          defaultValue={revenueLimits}
+          onAfterChange={(e) => setRevenueRange(e) }
+        />
+      </div>
+    </div>
+    <div>
+      <svg
+        id={id+"-treemap"} 
+        width={width} 
+        height={height}
+        >
+        {treemapRender}
+      </svg>
+    </div>
+  </div>
+}
+
+
+/*
+
+  const budgetLimits      = useMemo(() => minMax(m => m.budget, movies),           [movies])
+  const revenueLimits     = useMemo(() => minMax(m => m.revenue, movies),          [movies])
+  const profitLimits      = useMemo(() => minMax(m => m.revenue-m.budget, movies), [movies])
+  const profitRatioLimits = useMemo(() => minMax(m => m.revenue/m.budget, movies), [movies])
+
+
+tooltipVisibility: "hidden",
+tooltipMovie: dummyMovies[0],
+
+this.showTooltip = this.showTooltip.bind(this)
+this.hideTooltip = this.hideTooltip.bind(this)
+this.setTooltip = this.setTooltip.bind(this)
+this.setMousePosition = this.setMousePosition.bind(this)
+
+setTooltip(movie) {
+  this.setState({tooltipMovie: movie})
+}
+
+hideTooltip() {
+  this.setState({tooltipVisibility: "hidden"})
+}
+
+showTooltip() {
+  this.setState({tooltipVisibility: "visible"})
+}
+
+setMousePosition(x, y) {
+  this.setState({mousePositionX: x})
+  this.setState({mousePositionY: y})
+}
 
   renderTooltip() {
-    const mx = this.state.mousePositionX;
-    const my = this.state.mousePositionY;
-    const w = 350;
-    const h = 250;
+    const mx = this.state.mousePositionX
+    const my = this.state.mousePositionY
+    const w = 350
+    const h = 250
     return <g 
       key={this.props.id+"-tooltip"} 
       transform={`translate(${mx+100}, ${my-2})`} 
@@ -211,91 +296,58 @@ class Moviemap extends Component {
       <text x={4} y={16}>
         {this.state.tooltipMovie.title}
       </text>
-    </g>;
+    </g>
   }
-
-  renderMovieNode(node, index) {
-    const x = node.x0;
-    const y = node.y0;
-    const w = node.x1 - node.x0;
-    const h = node.y1 - node.y0;
-    const gradient = this.genGradient();
-    const color = gradient(this.state.gradientKey(node.data));
-    const ifontSize = w/(node.data.title.length*0.7);
-    const fontSize = Math.min(...[16, h-8, ifontSize]);
-    let title = <g> </g>;
-    if (w > 10 && h > 10) {
-      title = <text 
-          x={x+4} 
-          y={y+fontSize+4}
-          fontSize={`${fontSize}`}
-        >
-          {node.data.title}
-        </text>;
-    }
-    return <g id={"movie-"+node.data.id} key={index}>
-      <rect 
-        key={index} 
-        x={x} 
-        y={y} 
-        width={w} 
-        height={h} 
-        fill={color} 
-        stroke="black"
-        onMouseEnter={(e) => { 
-          this.setTooltip(node.data);
-          this.showTooltip();
-        }} 
-        onMouseLeave={(e) => this.hideTooltip()}
-      />
-      {title}
-    </g>;
-
+  { 
+    this.setTooltip(node.data)
+    this.showTooltip()
   }
+    onMouseMove={(e) => this.setMousePosition(e.clientX, e.clientY)} 
   
-  renderCategoryNode(category, index) {
-    const name = category.data.name;
-    return <g id={name} key={index}>
-      <text x={category.x0+4} y={category.y0+14}>{name}</text>
-      <g key={category+"-"+index} id="movies">
-        {
-          category.children.map((v, i) => this.renderMovieNode(v, i))
-        }
-      </g>
-    </g>;
+
+*/
+/*
+function MovieNodeSVG({className, key, id, }) {
+  const {x0, y0, x1, y1, data, } = props;
+  const x = props.x0
+  const y = props.y0
+  const w = props.x1 - props.x0
+  const h = props.y1 - props.y0
+  const title = props.data
+  
+  const ifontSize = w/(title.length*0.7)
+  const fontSize = Math.min(...[16, h-8, ifontSize])
+  let text = ""
+  if (w > 10 && h > 10) {
+    text = title
   }
 
-  render() {
-    const treemap = this.genTreemap();
-
-    return <div 
-      id={this.props.id+"-treemap"} 
-      key={this.props.id} 
-      onMouseMove={(e) => this.setMousePosition(e.clientX, e.clientY)} 
-    >
-      <svg
-        key={this.props.id+"-treemap"}
-        width={this.props.width} 
-        height={this.props.height}
-      >
-        {treemap.children.map((v, i) => this.renderCategoryNode(v, i))}
-        {this.renderTooltip()}
-      </svg>
-      <ReactSlider
-        className="horizontal-slider"
-        thumbClassName="example-thumb"
-        trackClassName="example-track"
-        renderThumb={(props, state) => <div><div>{state.value[state.index]}</div><div {...props}/></div>}
-        max={MAX_BUDGET}
-        min={MIN_BUDGET}
-        defaultValue={[MIN_BUDGET, MAX_BUDGET]}
-        onAfterChange={(e) => {
-          this.setState({filter_min_budget: e[0]});
-          this.setState({filter_max_budget: e[1]});
-        }}
-      />
-    </div>
-  }
+  return <g id={"movie-"+movieIndex} key={props.key}>
+    <rect
+      className='movie-node'
+      x={x} 
+      y={y} 
+      width={w} 
+      height={h} 
+      fill={fill}
+      stroke="black"
+      onMouseEnter={(e) => onMouseEnter(movieIndex)} 
+      onMouseLeave={(e) => onMouseLeave(movieIndex)}
+    />
+    <text x={x+4} y={y+fontSize+4} fontSize={fontSize}>
+      {text}
+    </text>
+  </g>
 }
 
-export default Moviemap; 
+function CategoryNode({key, id, title, x, y, width, height, children}) {
+  const children = children.map((child, i) => <MovieNode key={i} {...child}/>)
+
+  return <g key={key} id={id}>
+    <text id={id+'-title'} x={x+6} y={y+14}>{title}</text>
+    <g id={id+'-movies'}>{children}</g>
+  </g>
+}
+*/
+
+export default Moviemap 

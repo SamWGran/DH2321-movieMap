@@ -1,7 +1,19 @@
+.flex-container {
+  display: flex;
+}
+.vertical-flex {
+  display: flex;
+  min-height: fit-content;
+  min-width: fit-content;
+  flex-direction: column;
+  justify-content: center;
+}
+
 .horizontal-slider {
     width: 100%;
+    min-width: 300px;
     max-width: 500px;
-    height: 100vh;
+    height: 60px;
     margin: auto;
 }
 .example-thumb {
@@ -22,8 +34,17 @@
   background: #ddd;
 }
 .example-track.example-track-0 {
+  background: #a7a7a7;
+}
+
+.example-track.example-track-1 {
   background: #83a9ff;
 }
+
+.example-track.example-track-2 {
+  background: #a7a7a7;
+}
+
 .horizontal-slider .example-track {
   top: 20px;
   height: 4px;
