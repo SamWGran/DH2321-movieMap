@@ -1,3 +1,5 @@
+
+
 .flex-container {
   display: flex;
 }
@@ -16,6 +18,11 @@
     height: 60px;
     margin: auto;
 }
+
+.horizontal-slider:hover {
+  border-width: 4px;
+}
+
 .example-thumb {
   cursor: pointer;
   position: absolute;

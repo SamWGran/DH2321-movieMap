@@ -1,9 +1,9 @@
-import Moviemap from './classes/Moviemap';
-import './classes/styles.css'
+import MovieMap from './classes/MovieMap';
+import './styles/MovieMap.css'
 function App() {
   return (
     <div className="App">
-      <Moviemap id="moviemap" width={1000} height={800} onMovieEnter={(m)=>m} onMovieLeave={(m)=>m}/>
+      <MovieMap id="moviemap" className='movie-map' width={1000} height={800}/>
     </div>
   );
 }
