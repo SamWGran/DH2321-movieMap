@@ -13,9 +13,6 @@ function App() {
     width: window.innerWidth * 0.8
   })
 
-  const screenWidth = (percentage) => dimensions.width * percentage
-  const screenHeight = (percentage) => dimensions.height * percentage
-
   React.useEffect(() => {
     function handleResize() {
       setDimensions({

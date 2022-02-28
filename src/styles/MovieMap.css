@@ -1,33 +1,28 @@
-.movie-map {
-
+body {
+    border: 2px solid red;
 }
 
-.movie-map .group {
-
+#moviemap-treemap:hover {
+  cursor: crosshair;
 }
 
-.movie-map .group .panel {
-    
+#movie-group-title{
+    font-size: 16px;
+    font-weight: bold;
 }
 
-.movie-map .group .title {
+.score{
+    font-size: 12px;
 }
 
-.movie-map .group:hover .title {
+.group .member{
+    stroke: black;
 }
 
-.movie-map .group .member {
-    
+.group .title{
+    stroke: none;
 }
 
-.movie-map .group .member .panel {
-    
-}
-
-.movie-map .group .member .title {
-    
-}
-
-.movie-map .group .member .score {
-    
+#moviemap-treemap > .group > .panel {
+    fill-opacity: 50%;
 }

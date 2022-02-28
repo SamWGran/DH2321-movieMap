@@ -30,7 +30,7 @@ export default function MovieGroup(props) {
         id={'movie-group-'+htmlId}
         transform={`translate(${x}, ${y})`}
     >
-        <rect className={panelClassName} width={width} height={height} fillOpacity='50%' />
+        <rect className={panelClassName} width={width} height={height} />
         <text 
             className={titleClassName} 
             transform={`translate(${6}, ${4})`}
