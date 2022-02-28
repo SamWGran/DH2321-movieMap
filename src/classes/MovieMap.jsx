@@ -142,6 +142,8 @@ function MovieMap({ className, id, title, width, height}) {
       sortKey,
       sizeKey,
       groupKey,
+      width,
+      height
   ])
 
   // Rendering
