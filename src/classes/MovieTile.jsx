@@ -24,9 +24,19 @@ export default function MovieTile(props) {
         return <></>
     }
 
-    return <g
+    //  {(width > 10 && height > 10) ? movieData[child.data].title : ""}
+    return <>
+    <defs>
+        <mask
+            id={'movie-tile-mask-' + index}
+        >
+            <rect width={width} height={height} fill="#fff" />
+        </mask>
+    </defs>
+    <g
         id={'movie-tile-' + index}
         className={className}
+        mask={'url(#movie-tile-mask-' + index + ')'}
         transform={`translate(${x}, ${y})`}
         onClick={(e) => onSelected ? onSelected(index) : undefined}
         onMouseEnter={(e) => onShowDetails ? onShowDetails(index) : undefined}
@@ -43,7 +53,7 @@ export default function MovieTile(props) {
                 {score}
             </tspan>
         </text>
-    </g>
+    </g></>
 }
 
 MovieTile.defaultProps = {
