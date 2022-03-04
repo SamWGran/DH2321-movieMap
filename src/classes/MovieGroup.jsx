@@ -7,8 +7,6 @@ export default function MovieGroup(props) {
     const y = props.y
     const width = props.width
     const height = props.height
-    const widthCutoff = props.width
-    const heightCutoff = props.height
     const members = props.members
   
     const onSelected = props.onSelected
@@ -20,23 +18,24 @@ export default function MovieGroup(props) {
     const memberClassName = 'member'
     
     const htmlId = title.replaceAll("[^a-zA-Z0-9]", "-").toLowerCase();
-    
-    if (width < widthCutoff || height < heightCutoff) {
-        return <></>
-    }
-  
+
     return <g 
         className={className}
         id={'movie-group-'+htmlId}
-        transform={`translate(${x}, ${y})`}
     >
-        <rect className={panelClassName} width={width} height={height} fillOpacity='50%' />
-        <text 
+        <rect 
+            className={panelClassName} 
+            x={x} 
+            y= {y} 
+            width={width} 
+            height={height} 
+            fillOpacity='50%' 
+        />
+        <text
             className={titleClassName} 
-            transform={`translate(${6}, ${4})`}
+            x={x+6} 
+            y={y+8}
             dominantBaseline='hanging'
-
-            id='movie-group-title'
         >{title}</text>
         <g id={htmlId+'-movies'}>
             {members.map(member => {
@@ -46,8 +45,8 @@ export default function MovieGroup(props) {
                     title={member.title}
                     score={member.score}
                     index={member.index}
-                    x={member.x-x}
-                    y={member.y-y}
+                    x={member.x}
+                    y={member.y}
                     width={member.width}
                     height={member.height}
                     fill={member.fill}
@@ -66,7 +65,5 @@ MovieGroup.defaultProps = {
     y: 0,
     width: 0,
     height: 0,
-    widthCutoff: 10,
-    heightCutoff: 10,
     members: [],
 }
