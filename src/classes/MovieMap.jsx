@@ -183,8 +183,14 @@ function MovieMap({ className, id, title, width, height}) {
       onHideDetails: onHideDetails,
   }})
 
+  const zoom = 1;
+  const pan_x = 0;
+  const pan_y = 0;
+  //moveable(document.getElementById(id + "-treemap"))
+
+
   return <div>
-    <svg id={id + "-treemap"} width={width} height={height}>
+    <svg id={id + "-treemap"} width={width} height={height} viewBox={`${pan_x} ${pan_y} ${width / zoom + pan_x} ${height / zoom + pan_x}`}>
       {componentData.map(props => <MovieGroup key={props.title} {...props}/>)}
     </svg>
   </div>
