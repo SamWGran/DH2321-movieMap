@@ -13,38 +13,47 @@ input_file.close()
 def fetch_movie_details(session, movie_id, counter):
     print(f'Fetching movie #{counter}', sep="")
     api_key = "8bd7c4236fae31732aa5b61ce6dbc465"
-    url = f'https://api.themoviedb.org/3/movie/{movie_id}?api_key={api_key}&language=en-US'
+    url = f'https://api.themoviedb.org/3/movie/{movie_id}/credits?api_key={api_key}&language=en-US'
 
     with session.get(url) as response:
         if response.status_code == 200:
             json_data = response.json()
-            if (json_data["budget"] == 0 or json_data["revenue"] == 0):
-                return None
-            del json_data["adult"]
-            del json_data["backdrop_path"]
-            del json_data["belongs_to_collection"]
-            for genre in json_data["genres"]:
-                del genre["id"]
-            del json_data["homepage"]
-            del json_data["imdb_id"]
-            del json_data["original_title"]
-            del json_data["overview"]
-            del json_data["poster_path"]
-            del json_data["production_countries"]
-            for company in json_data["production_companies"]:
-                del company["logo_path"]
-            del json_data["spoken_languages"]
-            del json_data["status"]
-            del json_data["tagline"]
-            del json_data["video"]
+            
+            # Add json edits here
+            for member in json_data["cast"]:
+                del member["adult"]
+                del member["cast_id"]
+                del member["credit_id"]
+                del member["gender"]
+                del member["id"]
+                del member["order"]
+                del member["original_name"]
+                del member["profile_path"]
+                try: # Vissa crew och cast members har inte denna datapunkt.
+                    del member["known_for_department"]
+                except: 
+                    pass
 
+            for member in json_data["crew"]:
+                del member["adult"]
+                del member["credit_id"]
+                del member["gender"]
+                del member["id"]
+                del member["original_name"]
+                del member["profile_path"]
+                try: # Vissa crew och cast members har inte denna datapunkt.
+                    del member["known_for_department"]
+                except: 
+                    pass
+            
             return json_data
         else:
-            print("Response status code:", response.status_code)
+            print("Response status code:", response.status_code, "with movie_id:",movie_id)
+            print(movie_id)
             return None
 
 async def async_fetch():
-    with open("movie_details.txt", "w") as output_file:
+    with open("movie_credits.txt", "w") as output_file:
         output_file.write("(")
         with ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS) as threads:
             with requests.session() as session:
@@ -61,7 +70,7 @@ async def async_fetch():
                 for details in await asyncio.gather(*tasks) :
                     counter += 1
                     if details is not None:
-                        print(f'Processed movie #{counter} : {details["title"]}')
+                        print(f'Processed movie #{counter}')
                         json.dump(details, output_file, indent=4, sort_keys=True)
         output_file.write(")")
 
