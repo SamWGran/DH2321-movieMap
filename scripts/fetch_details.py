@@ -64,6 +64,7 @@ async def async_fetch():
                     if details is not None:
                         print(f'Processed movie #{counter} : {details["title"]}')
                         json.dump(details, output_file, indent=4, sort_keys=True)
+                        output_file.write(",")
         output_file.write("];\nexport default dummyMovies;")
 
 print("Fetching movies")
