@@ -1,5 +1,10 @@
 body {
     border: 2px solid red;
+    overflow: hidden;
+}
+
+.movable {
+    position: absolute;
 }
 
 #moviemap-treemap:hover {

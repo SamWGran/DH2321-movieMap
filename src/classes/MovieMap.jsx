@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import * as d3 from 'd3'
 import dummyMovies from './dummyData'
 import ReactSlider from 'react-slider'
@@ -31,6 +31,61 @@ function gradient3(start, center, end) {
 
 }
 
+
+
+function movable(elmnt) {
+  var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+
+  function dragMouseDown(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // get the mouse cursor position at startup:
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    document.onmouseup = closeDragElement;
+    // call a function whenever the cursor moves:
+    document.onmousemove = elementDrag;
+  }
+
+  function elementDrag(e) {
+    e = e || window.event;
+    e.preventDefault();
+    // calculate the new cursor position:
+    pos1 = pos3 - e.clientX;
+    pos2 = pos4 - e.clientY;
+    pos3 = e.clientX;
+    pos4 = e.clientY;
+    // set the element's new position:
+    elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+    elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+  }
+
+  function closeDragElement() {
+    // stop moving when mouse button is released:
+    document.onmouseup = null;
+    document.onmousemove = null;
+  }
+    elmnt.onmousedown = dragMouseDown;
+    elmnt.classList.add('movable');
+}
+
+function zoomable(elmnt) {
+  function zoom(event) {
+    event.preventDefault();
+  
+    scale += event.deltaY * -0.005;
+  
+    // Restrict scale
+    scale = Math.min(Math.max(1, scale), 8);
+  
+    // Apply scale transform
+    elmnt.style.transform = `scale(${scale})`;
+  }
+  
+  let scale = 1;
+  elmnt.onwheel = zoom;
+}
+
 function normalize(array) {
   const [min, max] = findMinMax(array)
   return array.map(m => (m - min) / (max - min))
@@ -53,6 +108,11 @@ function MovieMap({ className, id, title, width, height}) {
   const [sizeKey, setSizeKey] = useState("profit")
   const [gradKey, setGradKey] = useState("test")
   const [groupKey, setGroupKey] = useState("genres")
+  useEffect(() => {
+    const elmnt = document.getElementById("root")
+    movable(elmnt)
+    zoomable(elmnt)
+  })
 
   // Generate additional data fields.
   const derivedData = useMemo(() => {
@@ -183,14 +243,9 @@ function MovieMap({ className, id, title, width, height}) {
       onHideDetails: onHideDetails,
   }})
 
-  const zoom = 1;
-  const pan_x = 0;
-  const pan_y = 0;
-  //moveable(document.getElementById(id + "-treemap"))
-
 
   return <div>
-    <svg id={id + "-treemap"} width={width} height={height} viewBox={`${pan_x} ${pan_y} ${width / zoom + pan_x} ${height / zoom + pan_x}`}>
+    <svg id={id + "-treemap"} width={width} height={height}>
       {componentData.map(props => <MovieGroup key={props.title} {...props}/>)}
     </svg>
   </div>
