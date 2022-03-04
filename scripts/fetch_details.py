@@ -1,6 +1,7 @@
 import requests
 import json
 import asyncio
+import os
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -45,7 +46,7 @@ def fetch_movie_details(session, movie_id, counter):
 
 async def async_fetch():
     with open("movie_details.txt", "w") as output_file:
-        output_file.write("(")
+        output_file.write("const dummyMovies = [\n")
         with ThreadPoolExecutor(max_workers=MAX_WORKER_THREADS) as threads:
             with requests.session() as session:
                 event_loop = asyncio.get_event_loop()
@@ -63,9 +64,20 @@ async def async_fetch():
                     if details is not None:
                         print(f'Processed movie #{counter} : {details["title"]}')
                         json.dump(details, output_file, indent=4, sort_keys=True)
-        output_file.write(")")
+        output_file.write("];\nexport default dummyMovies;")
 
 print("Fetching movies")
 event_loop = asyncio.get_event_loop()
 future = asyncio.ensure_future(async_fetch())
 event_loop.run_until_complete(future)
+
+file_source_path = os.path.realpath(os.path.join(os.path.dirname(__file__), '.', '', 'movie_details.txt'))
+file_dest_path = os.path.realpath(os.path.join(os.path.dirname(__file__), '..', 'src/classes', 'movie_details.js'))
+
+print("Moving output from:")
+print(file_source_path)
+print("to:")
+print(file_dest_path)
+
+os.rename(file_source_path, file_dest_path)
+print("Finished")

@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import * as d3 from 'd3'
-import dummyMovies from './dummyData'
+//import dummyMovies from './dummyData'
+import dummyMovies from './movie_details'
 import ReactSlider from 'react-slider'
 import deepEquals from 'deep-equals'
 import MovieGroup from './MovieGroup'
