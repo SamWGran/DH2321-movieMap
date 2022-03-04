@@ -1,5 +1,4 @@
 body {
-    border: 2px solid red;
     overflow: hidden;
 }
 
@@ -12,12 +11,12 @@ body {
 }
 
 #movie-group-title{
-    font-size: 16px;
+    font-size: 0.8rem;
     font-weight: bold;
 }
 
 .score{
-    font-size: 12px;
+    font-size: 0.8em;
 }
 
 .group .member{

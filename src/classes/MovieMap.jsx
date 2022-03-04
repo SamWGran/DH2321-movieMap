@@ -80,6 +80,7 @@ function zoomable(elmnt) {
   
     // Apply scale transform
     elmnt.style.transform = `scale(${scale})`;
+    elmnt.style.fontSize = `${1/scale}em`;
   }
   
   let scale = 1;
