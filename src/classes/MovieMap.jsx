@@ -4,6 +4,7 @@ import dummyMovies from './dummyData'
 import ReactSlider from 'react-slider'
 import deepEquals from 'deep-equals'
 import MovieGroup from './MovieGroup'
+import MovieTooltip from './MovieTooltip'
 import { group, min, treemapBinary, treemapSquarify } from 'd3'
 
 
@@ -16,13 +17,16 @@ const defaultRanges = {
     profitRatio: [-Infinity, Infinity],
 }
 
-function MovieMap({ className, id, title, width, height, onSelected, onShowDetails, onHideDetails }) {
+function MovieMap({ className, id, title, width, height}) {
     const [rawData, setRawData] = useState(defaultMovies)
     const [colors, setColors] = useState(defaultColors)
     const [ranges, setRanges] = useState(defaultRanges)
-    const [sizeKey, setSizeKey] = useState("profitRatio")
+    const [sizeKey, setSizeKey] = useState("budget")
     const [gradKey, setGradKey] = useState("profit")
     const [groupKey, setGroupKey] = useState("genres")
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [tooltipData, setTooltipData] = useState({voteAverage:0, revenue:0, budget:0, profit:0, title:""})
+    const [mousePosition, setMousePosition] = useState([0, 0])
 
     // Process the raw data into more fields.
     const data = useMemo(() => rawData.map((m) => Object.create({
@@ -108,57 +112,87 @@ function MovieMap({ className, id, title, width, height, onSelected, onShowDetai
         return layout(tree);
     }, [movieData, sizes, gradients, groupKey])
 
+    const treemapRender = useMemo(() => {
+        const categories = treemap.children.map(m => {
+            return {
+                className: 'group',
+                title: m.data.name,
+                x: m.x0,
+                y: m.y0,
+                width: m.x1 - m.x0,
+                height: m.y1 - m.y0,
+                onMouseEnter: (_) => setShowTooltip(true),
+                onMouseLeave: (_) => setShowTooltip(false),
+                members: m.leaves().map(child => Object.create({
+                    key: child.data.index,
+                    id: movieData[child.data.index].id,
+                    title: movieData[child.data.index].title,
+                    score: child.data.size,
+                    index: child.data.index,
+                    x: child.x0,
+                    y: child.y0,
+                    width: child.x1 - child.x0,
+                    height: child.y1 - child.y0,
+                    fill: child.data.gradient,
+                    onMouseEnter: (_) => {setTooltipData({
+                            voteAverage: movieData[child.data.index].vote_average, 
+                            revenue: movieData[child.data.index].revenue, 
+                            budget: movieData[child.data.index].budget, 
+                            profit: movieData[child.data.index].profit,
+                            title: movieData[child.data.index].title,
+                    })},
+                })),
+            }
+        })
+        return <svg>{categories.map(props => <MovieGroup key={props.title} {...props} />)}</svg>
+    }, [treemap])
+
+    const tooltipRender = useMemo(() => {
+        return <MovieTooltip
+            x={mousePosition[0]}
+            y={mousePosition[1]}
+            offsetX={20}
+            offsetY={10}
+            boundX={width}
+            boundY={height}
+            width={400} 
+            height={200} 
+            visibility={showTooltip ? 'visible' : 'hidden'}
+            {...tooltipData}
+        />
+    }, [mousePosition, showTooltip, tooltipData])
+
     // Rendering
     if (!treemap.children) {
         return <><text>no movies</text></>
     }
 
-    const componentData = treemap.children.map(m => {
-        return {
-            className: 'group',
-            title: m.data.name,
-            x: m.x0,
-            y: m.y0,
-            width: m.x1 - m.x0,
-            height: m.y1 - m.y0,
-            members: m.leaves().map(child => Object.create({
-                id: movieData[child.data.index].id,
-                title: movieData[child.data.index].title,
-                score: child.data.size,
-                index: child.data.index,
-                x: child.x0,
-                y: child.y0,
-                width: child.x1 - child.x0,
-                height: child.y1 - child.y0,
-                fill: child.data.gradient,
-            })),
-            onSelected: onSelected,
-            onShowDetails: onShowDetails,
-            onHideDetails: onHideDetails,
-        }
-    })
-
-    return <div>
-        <svg id={id + "-treemap"} width={width} height={height}>
-            {componentData.map(props => <MovieGroup key={props.title} {...props} />)}
-            { }
-        </svg>
-    </div>
+    return <svg id={id + "-treemap"} width={width} height={height} onMouseMove={(e) => {setMousePosition([e.clientX, e.clientY])}}>
+        {treemapRender}
+        {tooltipRender}
+    </svg>
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /*
 <div>
         <text>Budget</text>
-        <ReactSlider
-          className="horizontal-slider"
-          thumbClassName="example-thumb"
-          trackClassName="example-track"
-          max={budgetLimits[1]}
-          min={budgetLimits[0]}
-          defaultValue={budgetLimits}
-          onAfterChange={(e) => setBudgetRange(e) }
-        />
+
       </div>
       <div>
         <text>Profit</text>
@@ -202,7 +236,7 @@ function MovieMap({ className, id, title, width, height, onSelected, onShowDetai
             height={height}
             fill={movieColors[i]}
             stroke="black"
-            onMouseEnter={(e) => onMovieEnter(movieData[child.data])} 
+            onMouseEnter={(e) => onMovieEnter(setShowTooltip(e))} 
             onMouseLeave={(e) => onMovieLeave(movieData[child.data])}
           />
           <text x={child.x0+4} y={child.y0+fontSize+4} fontSize={fontSize}>
@@ -258,8 +292,8 @@ setMousePosition(x, y) {
     >
       <rect
         id="tooltip"
-        width={w} 
-        height={h} 
+        width={w}
+        height={h}
         fill="white" 
         strokeWidth="2" 
         stroke="black" 

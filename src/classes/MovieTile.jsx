@@ -11,9 +11,9 @@ export default function MovieTile(props) {
     const height = props.height
     const fill = props.fill
 
-    const onSelected = props.onSelected
-    const onShowDetails = props.onShowDetails
-    const onHideDetails = props.onHideDetails
+    const onMouseEnter = props.onMouseEnter
+    const onMouseLeave = props.onMouseLeave
+    const onClick = props.onClick
 
     const titleClassName = 'title'
     const scoreClassName = 'score'
@@ -22,26 +22,14 @@ export default function MovieTile(props) {
     return <g
         id={'movie-tile-' + index}
         className={className}
-        onClick={(e) => onSelected ? onSelected(index) : undefined}
-        onMouseEnter={(e) => onShowDetails ? onShowDetails(index) : undefined}
-        onMouseLeave={(e) => onHideDetails ? onHideDetails(index) : undefined}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseEnter}
     >
         <rect className={panelClassName} x={x} y={y} width={width} height={height} fill={fill} />
-
     </g>
 }
-/**
-        <text className={titleClassName} 
-            transform={`translate(${6}, ${4})`}
-            dominantBaseline='hanging'>
-            <tspan x='0'>
-                {title}
-            </tspan>
-            <tspan className={scoreClassName} x='0' dy='1.2em'>
-                {score}
-            </tspan>
-        </text>
-*/
+
 MovieTile.defaultProps = {
     title: "",
     score: 0,
