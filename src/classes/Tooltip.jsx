@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import * as d3 from 'd3'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import useMousePosition from './useMousePosition'
 
 import DonutChart from './DonutChart'
@@ -16,38 +16,40 @@ export default function Tooltip({
 }) {
     const [mouseX, mouseY] = useMousePosition()
 
-    const content = useMemo(() => {
-        // Early exit when no movie to show.
-        if (!movie) return <></>
-        else return <g>
-            <rect
-                width={width}
-                height={height}
-                fill="white"
-                stroke="black"
-            />
-            <text>
-                <tspan x='1em' dy='2em'>{movie.title}</tspan>
-                <tspan x='1em' dy='2em'>{'Revenue:'}</tspan>, 
-                <tspan x='6em'>{`${movie.revenue}$`}</tspan>
-                <tspan x='1em' dy='2em'>{'Budget:'}</tspan>, 
-                <tspan x='6em'>{`${movie.budget}$`}</tspan>
-                <tspan x='1em' dy='2em'>{'Profit:'}</tspan>
-                <tspan x='6em'>{`${movie.profit}$`}</tspan>
-            </text>
-            <DonutChart 
-                x={width/2+100} 
-                y={height/2}
-                innerRadius={Math.min(width, height)*0.2} 
-                outerRadius={Math.min(width, height)*0.4}
-                frontFill="red"
-                backFill="grey"
-                value={movie.vote_average}
-                min={0}
-                max={10}
-            />
-        </g>
-    }, [width, height, dx, dy, movie])
+    // Returns empty if no movie is found!
+    const content = useMemo(
+        () => (!movie ? <></> :
+            <g>
+                <rect
+                    width={width}
+                    height={height}
+                    fill="white"
+                    stroke="black"
+                />
+                <DonutChart 
+                    x={width/2+100} 
+                    y={height/2}
+                    innerRadius={Math.min(width, height)*0.2} 
+                    outerRadius={Math.min(width, height)*0.4}
+                    frontFill="red"
+                    backFill="grey"
+                    value={movie.vote_average}
+                    min={0}
+                    max={10}
+                />
+                <text>
+                    <tspan x='1em' dy='2em'>{movie.title}</tspan>
+                    <tspan x='1em' dy='2em'>{'Revenue:'}</tspan>
+                    <tspan x='6em'>{`${movie.revenue}$`}</tspan>
+                    <tspan x='1em' dy='2em'>{'Budget:'}</tspan> 
+                    <tspan x='6em'>{`${movie.budget}$`}</tspan>
+                    <tspan x='1em' dy='2em'>{'Profit:'}</tspan>
+                    <tspan x='6em'>{`${movie.profit}$`}</tspan>
+                </text>
+            </g>
+        ),
+        [width, height, dx, dy, movie]
+    )
 
     const bbox = {
         x: boundingBox[0],
@@ -61,14 +63,14 @@ export default function Tooltip({
     const bby = bbox.h+bbox.y-height
     const x = nx > bbx ? mouseX-width-dx: nx
     const y = Math.min(bby, ny)
-
     const style = { 
         position:'absolute',
         left: 0,
         top: 0,
     }
 
-    return <svg
+    return (
+        <svg
             style={style}
             visibility={visibility}
             transform={`translate(${x}, ${y})`}
@@ -77,4 +79,5 @@ export default function Tooltip({
         >
             {content}
         </svg>
+    )
 }

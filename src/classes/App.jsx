@@ -17,31 +17,33 @@ export default function App() {
     const [filters, setFilters] = useState({})
     const [tooltip, setTooltip] = useState({movie: null, visibility: 'hidden'})
     
-    useEffect(
-        () => {
-            const filterFromKey = key => {
-                const [min, max] = d3.extent(data.map(m => m[key]))
-                return {key, min, max}
-            }
-            const newFilters = {
-                revenue: filterFromKey('revenue'),
-                revenue: filterFromKey('revenue'),
-                profit: filterFromKey('profit'),
-                profitRatio: filterFromKey('profitRatio'),
-            } 
-            //setFilters(prev => Object.assign({}, prev, newFilters))
-        },
-        [data]
-    )
-
     const width = 1600
     const height = 900
     const x = 0
     const y = 0
+    const style = {
+        backgroundColor: '#0d253f', 
+        width:'100%', 
+        height:'100%',
+    }
 
     const showTooltip = () => setTooltip({visibility: 'visible'})
     const hideTooltip = () => setTooltip({visibility: 'visible'})
     const swapTooltip = (movie) => setTooltip({movie: movie})
+
+    useEffect(
+        () => {
+            const intoFilter = key => {
+                const [min, max] = d3.extent(data.map(m=>m[key]))
+                return {key: {min, max}}
+            }
+            //setFilters(intoFilter('budget'))
+            //setFilters(intoFilter('revenue'))
+            //setFilters(intoFilter('profit'))
+            //setFilters(intoFilter('profitRatio'))
+        },
+        [data]
+    )
 
     const renderedTooltip = useMemo(
         () => (
@@ -79,12 +81,6 @@ export default function App() {
         ),
         [data, gradient, sizeKey, colorKey, groupKey, filters]
     )
-
-    const style = {
-        backgroundColor: '#0d253f', 
-        width:'100%', 
-        height:'100%'
-    }
 
     return (
       <div className='App' style={style}>

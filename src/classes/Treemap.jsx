@@ -1,7 +1,14 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import * as d3 from 'd3'
 
-
+/**
+ * Treemap is a React component that represents a treemap.
+ * @param gradient - Array of colors to interpolate into the gradient.
+ * @param colorKey - Numeric field in data used to determine color.
+ * @param sizeKey - Numeric field in data used to determine size.
+ * @param groupKey - The Field in data that is use determine group membership.
+ * @param filters - Object that contains fields of type 'key: {key, min, max}'
+ */
 export default function Treemap({
     x,
     y,
@@ -63,6 +70,10 @@ export default function Treemap({
     }</svg>
 }
 
+/**
+ * React component used to render a group node in the treemap.
+ * @param {*} properties - properties of the group.
+ */
 function Group({x, y, width, height, data, onMouseEnter, onMouseLeave, children}) {
     const htmlName = data.name
         .replaceAll("[^a-zA-Z0-9]", "-")
@@ -96,7 +107,11 @@ function Group({x, y, width, height, data, onMouseEnter, onMouseLeave, children}
         </g>
     )
 }
-
+/**
+ * React component used to render a tile in the treemap.
+ * @param {*} properties 
+ * @returns 
+ */
 function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave}) {
     const panel = <rect
         className='tile'
@@ -116,10 +131,23 @@ function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave}) 
     Helper functions
 */
 
+/**
+ * Checks if value is in range.
+ * @param {number} value - value to compare.
+ * @param {number} min - minimum value.
+ * @param {number} max - maximum value.
+ * @returns true if value is between min and max.
+ */
 function between(value, min, max) {
     return min <= value && value <= max
 }
 
+/**
+ * Maps each element in data to a number between 0 and 100 that represents the data.
+ * @param {*} data - The data used. 
+ * @param {*} sizeKey - The field used to determine size.
+ * @returns Array of sizes.
+ */
 function mapToSizeData(data, sizeKey) {
     const keys = data.map(m => m[sizeKey])
     const extent = d3.extent(keys)
@@ -127,6 +155,13 @@ function mapToSizeData(data, sizeKey) {
     return keys.map(scale)
 }
 
+/**
+ * Maps each element in data to a number between color on gradient.
+ * @param {*} data - The data used. 
+ * @param {*} colorKey - The field used to determine gradient.
+ * @param {*} gradient - Colors used to generate gradient.
+ * @returns Array of colors.
+ */
 function mapToColorData(data, colorKey, gradient) {
     const interp = d3.interpolateRgbBasis(gradient)
     const keys = d3.map(data, m => m[colorKey])
@@ -139,6 +174,12 @@ function mapToColorData(data, colorKey, gradient) {
     return keys.map(m => interp(scale(m)))
 }
 
+/**
+ * Generates an array of index and groups which bind an index to a group.
+ * @param {*} data - The data used.
+ * @param {*} groupKey - The field used to get which groups and object belongs to.
+ * @returns Array of {index, group} pairs.
+ */
 function mapToGroupData(data, groupKey) {
     const nameOf = x => x.name ? x.name : x
     const membership = data.map(m => [m[groupKey]].flat().map(nameOf))
@@ -150,7 +191,16 @@ function mapToGroupData(data, groupKey) {
     console.log(tiles)
     return tiles
 }
-
+/**
+ * 
+ * @param {*} data - The data used. 
+ * @param {*} sizeKey - Field used to determine the size.
+ * @param {*} colorKey - Field used to determine the size.
+ * @param {*} groupKey - Field used to determine which groups and object is a member of.
+ * @param {*} gradient - Colors used to generate the gradient.
+ * @param {*} filters - Filters used to filter out data.
+ * @returns A d3 Treemap root node. Each leaf has the data {index, group, color, size}.
+ */
 function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
     const sizeData = mapToSizeData(data, sizeKey)
     const colorData = mapToColorData(data, colorKey, gradient)
