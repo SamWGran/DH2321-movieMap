@@ -1,4 +1,5 @@
-const dummyMovies = [
+
+const sample = [
     {
         "budget": 200000000,
         "genres": [
@@ -25727,5 +25728,4 @@ const dummyMovies = [
         "vote_count": 13
     }
 ];
-
-export default dummyMovies;
+export default sample
