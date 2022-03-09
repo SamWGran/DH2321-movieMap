@@ -30,7 +30,7 @@ export default function Treemap({
         .paddingOuter(5)
         .paddingTop(28)
         .round(true)
-        .tile(d3.treemapBinary)
+        .tile(d3.treemapSquarify)
         .size([width, height])
     const tree = mapToTreeData(
         data, 
@@ -42,7 +42,9 @@ export default function Treemap({
     )
     const treemap = layout(tree)
     if (!treemap.children) {
-        return <text>no movies</text>
+        return <svg width={width} height={height} x={x} y={y} fill={'blue'}>
+            <rect fill='blue'/>
+        </svg>
     }
     return <svg width={width} height={height} x={x} y={y}> {
         treemap.children.map(g => <Group
@@ -204,15 +206,19 @@ function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
     const sizeData = mapToSizeData(data, sizeKey)
     const colorData = mapToColorData(data, colorKey, gradient)
     const groupData = mapToGroupData(data, groupKey)
+
+    console.log(filters)
+
     const filterLeaves = x => {
-        const funs = Object.entries(filters).map(filter => {
+        const funs = filters.map(filter => {
             const min = filter.min
             const max = filter.max
             const key = filter.key
             const fun = m => between(m[key], min, max)
             return fun
         })
-        return funs.map(f => f(data[x.index])).every(b=>b)
+        const results = funs.map(f => f(data[x.index]))
+        return results.length == 0 || results.every(b=>b)
     }
     const mapLeaves = x => {
         const index = x.index
@@ -240,11 +246,11 @@ function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
         return nodeOrder(b) - nodeOrder(a)
     }
     const leaves = groupData.filter(filterLeaves).map(mapLeaves)
-    console.log(leaves)
+    //console.log(leaves)
     const nodes = d3.groups(leaves, x => x.group).filter(filterNodes).map(mapNodes)
-    console.log(nodes)
+    //console.log(nodes)
     const root = {name: "root", children: nodes}
-    console.log(root)
+    //console.log(root)
     const tree = d3.hierarchy(root).sort(nodeSort).sum(n => n.size)
     console.log(tree)
     return tree;

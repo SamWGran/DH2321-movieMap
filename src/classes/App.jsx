@@ -1,49 +1,69 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 import '../styles/MovieMap.css'
-import Treemap from './Treemap';
-import Tooltip from './Tooltip';
+import '../styles/moviemapStyles.css'
+import Treemap from './Treemap'
+import Tooltip from './Tooltip'
 import sample from '../data/sampleData'
+import Menu from './Menu'
+import {deepEquals} from 'deep-equals'
 
 const defaultMovies = extrapolate(sample)
 const defaultGradient = ["red", "gray", "green"]
 
+
 export default function App() {
+    const width = 1200
+    const height = 900
+    const x = 0
+    const y = 0
+
+    /**
+     * State objects
+     */
     const [data, setData] = useState(defaultMovies)
     const [gradient, setGradient] = useState(defaultGradient)
     const [sizeKey, setSizeKey] = useState('budget')
     const [colorKey, setColorKey] = useState('profit')
     const [groupKey, setGroupKey] = useState('genres')
-    const [filters, setFilters] = useState({})
+
     const [tooltip, setTooltip] = useState({movie: null, visibility: 'hidden'})
+    const showTooltip = () => setTooltip(prev => ({...prev, ...{visibility: 'visible'}}))
+    const hideTooltip = () => setTooltip(prev => ({...prev, ...{visibility: 'hidden'}}))
+    const swapTooltip = (movie) => setTooltip(prev => ({...prev, ...{movie: movie}}))
     
-    const width = 1600
-    const height = 900
-    const x = 0
-    const y = 0
-    const style = {
-        backgroundColor: '#0d253f', 
-        width:'100%', 
-        height:'100%',
+    const [ranges, setRanges] = useState([])
+    const insertRange = (key, min, max) => {
+        const index = ranges.findIndex(x => x.key === key)
+        if (index === -1) {
+            setRanges(prev => [...prev, {key, min, max}])
+        } else {
+            setRanges(prev => {
+                let copy = [...prev]
+                copy[index] = {key, min, max}
+                return copy
+            })
+        }
     }
 
-    const showTooltip = () => setTooltip({visibility: 'visible'})
-    const hideTooltip = () => setTooltip({visibility: 'visible'})
-    const swapTooltip = (movie) => setTooltip({movie: movie})
-
-    useEffect(
+    const bounds = useMemo(
         () => {
-            const intoFilter = key => {
-                const [min, max] = d3.extent(data.map(m=>m[key]))
-                return {key: {min, max}}
+            const f = key => d3.extent(data.map(m=>m[key]))
+            const current = {
+                budget:      f('budget'),
+                revenue:     f('revenue'),
+                profit:      f('profit'),
+                profitRatio: f('profitRatio'),
             }
-            //setFilters(intoFilter('budget'))
-            //setFilters(intoFilter('revenue'))
-            //setFilters(intoFilter('profit'))
-            //setFilters(intoFilter('profitRatio'))
+            Object.entries(current).forEach(([key, [min, max]]) => {
+                console.log(key, min, max)
+                insertRange(key, min, max)
+            }) 
+            return current
         },
         [data]
     )
+    
 
     const renderedTooltip = useMemo(
         () => (
@@ -63,7 +83,7 @@ export default function App() {
     const renderedMovieMap = useMemo(
         () => (
             <Treemap 
-                className='movie-map' 
+                className='movie-map'
                 x={x}
                 y={y}
                 width={width}
@@ -76,16 +96,28 @@ export default function App() {
                 sizeKey={sizeKey}
                 colorKey={colorKey}
                 groupKey={groupKey}
-                filters={filters}
+                filters={ranges}
             />
         ),
-        [data, gradient, sizeKey, colorKey, groupKey, filters]
+        [data, gradient, sizeKey, colorKey, groupKey, ranges]
+    )
+
+    const menu = (
+        <Menu
+            extents={bounds}
+            onAfterChange={(k, min, max) => insertRange(k, min, max)}
+        />
     )
 
     return (
-      <div className='App' style={style}>
-          {renderedMovieMap}
-          {renderedTooltip}
+      <div className='App'>
+          <div className='horizontal-flex-container'>
+            {menu}
+            <div>
+                {renderedMovieMap}
+                {renderedTooltip}
+            </div>
+          </div>
       </div>
     );
 }

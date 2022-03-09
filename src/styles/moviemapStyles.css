@@ -1,9 +1,6 @@
 
 
-.flex-container {
-  display: flex;
-}
-.vertical-flex {
+.vertical-flex-container {
   display: flex;
   min-height: fit-content;
   min-width: fit-content;
@@ -11,10 +8,17 @@
   justify-content: center;
 }
 
+.horizontal-flex-container {
+    display: flex;
+    min-height: fit-content;
+    min-width: fit-content;
+    flex-direction: row;
+    justify-content: center;
+  }
+
 .horizontal-slider {
     width: 100%;
-    min-width: 300px;
-    max-width: 500px;
+    min-width: 200px;
     height: 60px;
     margin: auto;
 }
@@ -23,7 +27,19 @@
   border-width: 4px;
 }
 
-.example-thumb {
+.horizontal-slider .default-track {
+  top: 20px;
+  height: 4px;
+}
+.horizontal-slider .default-thumb {
+  top: 12px;
+  width: 10px;
+  outline: none;
+  height: 10px;
+  line-height: 38px;
+}
+
+.default-thumb {
   cursor: pointer;
   position: absolute;
   z-index: 100;
@@ -33,33 +49,23 @@
   display: block;
   box-shadow: 0 0 2px 0 rgb(0 0 0 / 44%);
 }
-.example-thumb.active {
+.default-thumb.active {
   background-color: grey;
 }
-.example-track {
+
+.default-track {
   position: relative;
   background: #ddd;
 }
-.example-track.example-track-0 {
+.default-track.default-track-0 {
   background: #a7a7a7;
 }
 
-.example-track.example-track-1 {
+.default-track.default-track-1 {
   background: #83a9ff;
 }
 
-.example-track.example-track-2 {
+.default-track.default-track-2 {
   background: #a7a7a7;
 }
 
-.horizontal-slider .example-track {
-  top: 20px;
-  height: 4px;
-}
-.horizontal-slider .example-thumb {
-  top: 12px;
-  width: 10px;
-  outline: none;
-  height: 10px;
-  line-height: 38px;
-}
