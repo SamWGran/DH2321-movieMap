@@ -11,75 +11,87 @@ const defaultGradient = ["red", "gray", "green"]
 export default function App() {
     const [data, setData] = useState(defaultMovies)
     const [gradient, setGradient] = useState(defaultGradient)
-    const [sizeKey, setSizeKey] = useState("budget")
-    const [colorKey, setColorKey] = useState("profit")
-    const [groupKey, setGroupKey] = useState("genres")
+    const [sizeKey, setSizeKey] = useState('budget')
+    const [colorKey, setColorKey] = useState('profit')
+    const [groupKey, setGroupKey] = useState('genres')
     const [filters, setFilters] = useState({})
-    const [tooltip, setTooltip] = useState({movie: null, visibility: "hidden"})
+    const [tooltip, setTooltip] = useState({movie: null, visibility: 'hidden'})
     
-    useEffect(() => {
-        const filterFromKey = key => {
-            const [min, max] = d3.extent(data.map(m => m[key]))
-            return {key, min, max}
-        }
-        setFilters([
-            // filterFromKey("revenue"),
-            // filterFromKey("revenue"),
-            // filterFromKey("profit"),
-            // filterFromKey("profitRatio"),
-        ])
-    }, [data])
+    useEffect(
+        () => {
+            const filterFromKey = key => {
+                const [min, max] = d3.extent(data.map(m => m[key]))
+                return {key, min, max}
+            }
+            const newFilters = {
+                revenue: filterFromKey('revenue'),
+                revenue: filterFromKey('revenue'),
+                profit: filterFromKey('profit'),
+                profitRatio: filterFromKey('profitRatio'),
+            } 
+            //setFilters(prev => Object.assign({}, prev, newFilters))
+        },
+        [data]
+    )
 
     const width = 1600
     const height = 900
     const x = 0
     const y = 0
 
-    const showTooltip = useCallback(() => {
-        setTooltip((prev) => { return {...prev, visibility:'visible'}})
-    }, [tooltip])
+    const showTooltip = () => setTooltip({visibility: 'visible'})
+    const hideTooltip = () => setTooltip({visibility: 'visible'})
+    const swapTooltip = (movie) => setTooltip({movie: movie})
 
-    const hideTooltip = useCallback(() => {
-        setTooltip((prev) => { return {...prev, visibility:'hidden'}})
-    }, [tooltip])
-    
-    const swapTooltip = useCallback((movie) => {
-        setTooltip((prev) => { return {...prev, movie: movie}})
-    }, [tooltip])
+    const renderedTooltip = useMemo(
+        () => (
+            <Tooltip
+                dx={75}
+                dy={-10}
+                boundingBox={[x, y, width, height]}
+                width={400}
+                height={200}
+                visibility={tooltip.visibility}
+                movie={tooltip.movie}
+            />
+        ),
+        [tooltip]
+    )
 
-    const renderedTooltip = useMemo(() => <Tooltip
-        dx={75}
-        dy={-10}
-        boundingBox={[x, y, width, height]}
-        width={400}
-        height={200}
-        visibility={tooltip.visibility}
-        movie={tooltip.movie}
-    />, [tooltip])
+    const renderedMovieMap = useMemo(
+        () => (
+            <Treemap 
+                className='movie-map' 
+                x={x}
+                y={y}
+                width={width}
+                height={height}
+                onShowTooltip={showTooltip}
+                onHideTooltip={hideTooltip}
+                onSwapTooltip={swapTooltip}
+                data={data}
+                gradient={gradient}
+                sizeKey={sizeKey}
+                colorKey={colorKey}
+                groupKey={groupKey}
+                filters={filters}
+            />
+        ),
+        [data, gradient, sizeKey, colorKey, groupKey, filters]
+    )
 
-    const renderedMovieMap = useMemo(() => <Treemap 
-        className='movie-map' 
-        x={x}
-        y={y}
-        width={width}
-        height={height}
-        onShowTooltip={showTooltip}
-        onHideTooltip={hideTooltip}
-        onSwapTooltip={swapTooltip}
-        data={data}
-        gradient={gradient}
-        sizeKey={sizeKey}
-        colorKey={colorKey}
-        groupKey={groupKey}
-        filters={filters}
-    />, [data, gradient, sizeKey, colorKey, groupKey, filters])
+    const style = {
+        backgroundColor: '#0d253f', 
+        width:'100%', 
+        height:'100%'
+    }
 
-  return (
-    <div className="App" style={{backgroundColor: '#0d253f', width:'100%', height:'100%'}}>
-        {renderedMovieMap}
-        {renderedTooltip}
-    </div>
-  );
+    return (
+      <div className='App' style={style}>
+          {renderedMovieMap}
+          {renderedTooltip}
+      </div>
+    );
 }
 
 function extrapolate(data) {
