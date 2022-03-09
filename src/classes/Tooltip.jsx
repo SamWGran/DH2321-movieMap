@@ -4,7 +4,14 @@ import useMousePosition from './useMousePosition'
 
 import DonutChart from './DonutChart'
 
-
+/**
+ * React component that renders a tooltip.
+ * @param {*} dx - Tooltips offset from the mouse in x direction.
+ * @param {*} dy - Tooltips offset from the mouse in y direction.
+ * @param {*} visibility - Either 'hidden' or 'visible'
+ * @param {*} boundingBox - The box that the tooltip is limited to.
+ * @param {*} movie - The movie data used to render the tooltip.
+ */
 export default function Tooltip({
     width,
     height,

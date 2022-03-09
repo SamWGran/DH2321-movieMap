@@ -26,7 +26,7 @@ export default function Treemap({
 }) {
     const layout =  d3
         .treemap()
-        .paddingInner(1)
+        .paddingInner(n => n.depth == 0 ? 10 : 1)
         .paddingOuter(5)
         .paddingTop(28)
         .round(true)
@@ -47,7 +47,6 @@ export default function Treemap({
     return <svg width={width} height={height} x={x} y={y}> {
         treemap.children.map(g => <Group
             key={g.data.name}
-            className='group'
             data={g.data}
             x={g.x0}
             y={g.y0}
