@@ -50,7 +50,7 @@ export default function App() {
     const renderedTooltip = useMemo(() => <Tooltip
         dx={75}
         dy={-10}
-        box={[x, y, width, height]}
+        boundingBox={[x, y, width, height]}
         width={400}
         height={200}
         visibility={tooltip.visibility}

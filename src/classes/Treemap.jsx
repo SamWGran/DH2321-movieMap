@@ -17,50 +17,50 @@ export default function Treemap({
     onShowTooltip,
     onHideTooltip,
 }) {
-        const layout =  d3
-            .treemap()
-            .paddingInner(1)
-            .paddingOuter(5)
-            .paddingTop(28)
-            .round(true)
-            .tile(d3.treemapBinary)
-            .size([width, height])
-        const tree = mapToTreeData(
-            data, 
-            sizeKey, 
-            colorKey, 
-            groupKey, 
-            gradient,
-            filters
-        )
-        const treemap = layout(tree)
-        if (!treemap.children) {
-            return <text>no movies</text>
-        }
-        return <svg width={width} height={height} x={x} y={y}> {
-            treemap.children.map(g => <Group
-                key={g.data.name}
-                className='group'
-                data={g.data}
-                x={g.x0}
-                y={g.y0}
-                width={g.x1 - g.x0}
-                height={g.y1 - g.y0}
-                onMouseEnter={(_) => onShowTooltip()}
-                onMouseLeave={(_) => onHideTooltip()}> { 
-                    g.leaves().map(t => <Tile
-                        key={t.data.index}
-                        x={t.x0}
-                        y={t.y0}
-                        width={t.x1 - t.x0}
-                        height={t.y1 - t.y0}
-                        fill={t.data.color}
-                        movie={data[t.data.index]}
-                        onMouseEnter={(_) => onSwapTooltip(data[t.data.index])}/>
-                    )
-                }
-            </Group>)
-        }</svg>
+    const layout =  d3
+        .treemap()
+        .paddingInner(1)
+        .paddingOuter(5)
+        .paddingTop(28)
+        .round(true)
+        .tile(d3.treemapBinary)
+        .size([width, height])
+    const tree = mapToTreeData(
+        data, 
+        sizeKey, 
+        colorKey, 
+        groupKey, 
+        gradient,
+        filters
+    )
+    const treemap = layout(tree)
+    if (!treemap.children) {
+        return <text>no movies</text>
+    }
+    return <svg width={width} height={height} x={x} y={y}> {
+        treemap.children.map(g => <Group
+            key={g.data.name}
+            className='group'
+            data={g.data}
+            x={g.x0}
+            y={g.y0}
+            width={g.x1 - g.x0}
+            height={g.y1 - g.y0}
+            onMouseEnter={(_) => onShowTooltip()}
+            onMouseLeave={(_) => onHideTooltip()}> { 
+                g.leaves().map(t => <Tile
+                    key={t.data.index}
+                    x={t.x0}
+                    y={t.y0}
+                    width={t.x1 - t.x0}
+                    height={t.y1 - t.y0}
+                    fill={t.data.color}
+                    movie={data[t.data.index]}
+                    onMouseEnter={(_) => onSwapTooltip(data[t.data.index])}/>
+                )
+            }
+        </Group>)
+    }</svg>
 }
 
 function Group({x, y, width, height, data, onMouseEnter, onMouseLeave, children}) {
