@@ -40,3 +40,6 @@ rect.tile {
     transition: 250ms opacity ease;
     opacity: 1;
 }
+.movable {
+    position: absolute;
+}
