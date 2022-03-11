@@ -9,7 +9,7 @@ import Menu from './Menu'
 import {deepEquals} from 'deep-equals'
 
 const defaultMovies = extrapolate(sample)
-const defaultGradient = ["red", "gray", "green"]
+const defaultGradient = ["purple", "yellow", "green"]
 
 
 export default function App() {
@@ -24,7 +24,7 @@ export default function App() {
     const [data, setData] = useState(defaultMovies)
     const [gradient, setGradient] = useState(defaultGradient)
     const [sizeKey, setSizeKey] = useState('budget')
-    const [colorKey, setColorKey] = useState('profit')
+    const [colorKey, setColorKey] = useState('profitRatio')
     const [groupKey, setGroupKey] = useState('genres')
 
     const [tooltip, setTooltip] = useState({movie: null, visibility: 'hidden'})
