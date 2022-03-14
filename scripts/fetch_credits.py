@@ -88,5 +88,10 @@ print(file_source_path)
 print("to:")
 print(file_dest_path)
 
+if os.path.exists(file_dest_path):
+    os.remove(file_dest_path)
+else:
+    print("...")
+    
 os.rename(file_source_path, file_dest_path)
 print("Finished")
