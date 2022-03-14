@@ -31,3 +31,12 @@
 .movie-map .group .member .score {
     
 }
+
+rect.tile:hover {
+    opacity: 0.35;
+}
+
+rect.tile {
+    transition: 250ms opacity ease;
+    opacity: 1;
+}
