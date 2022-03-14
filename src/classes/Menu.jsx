@@ -1,36 +1,60 @@
 import '../styles/moviemapStyles.css'
 import * as d3 from 'd3'
-import ReactSlider from 'react-slider'
-import React, {useMemo} from 'react'
+import {Slider, Box, Grid, Typography} from '@mui/material';
+import React, {useMemo, useState} from 'react'
 
-export default function Menu({extents, onAfterChange}) {    
-    const sliders = useMemo(
-        () => Object.entries(extents).map(
-            ([key, [min, max]], i) => {
-                return (<div>
-                    <h3>{key}{}{}</h3>
-                    <ReactSlider
-                        key={i}
-                        className="horizontal-slider"
-                        thumbClassName="default-thumb"
-                        trackClassName="default-track"
-                        max={max}
-                        min={min}
-                        defaultValue={[min, max]}
-                        onAfterChange={(values, _) => { 
-                            console.log(key, values); 
-                            onAfterChange(key, values[0], values[1])
-                        }}
-                    />
-                    </div>
-                )
-            }
-        ),
-        [extents, onAfterChange]
-    )
+function formatDollars(amount) {
+    const amountDiv = amount/1000000
+    if (amountDiv < 1) {
+        return '$' + (amountDiv*1000).toFixed(0).toString() + 'k'
+    } else if (amountDiv < 1000) {
+        return '$' + amountDiv.toFixed(1).toString() + 'm'
+    } else {
+        return '$' + amountDiv.toFixed(0).toString() + 'm'
+    }
+}
+
+export default function Menu({
+    budgetMin, 
+    budgetMax, 
+    onBudgetChange,
+}) {
+    const [budgetValue, setBudgetValue] = useState([budgetMin, budgetMax])
+    const budgetSlider = useMemo(() => (
+        <Slider
+            disableSwap
+            getAriaLabel={(i)=>'Budget'}
+            getAriaValueText={(value) => formatDollars(value)}
+            step={1000}
+            max={budgetMax}
+            min={budgetMin}
+            value={[budgetValue[0], budgetValue[1]]}
+            onChange={(e, values) => {setBudgetValue(values)}}
+            onChangeCommitted={(e, values) => { 
+                console.log('budget', values); 
+                onBudgetChange(values[0], values[1])
+            }}
+        />
+    ), [budgetMin, budgetMax, budgetValue, onBudgetChange])
     return (
-        <div className='vertical-flex-container'>
-            {sliders}
-        </div>
+        <Box sx={{ width: 400 }}>
+            <Typography id="budget-slider" gutterBottom>
+              Budget
+            </Typography>
+            <Grid container spacing={2} alignItems="center">
+                <Grid item xs={6}>
+                    <Typography align='left'>{`${formatDollars(budgetValue[0])}`}</Typography>
+                </Grid>
+
+                <Grid item xs={6}>
+                  <Typography align='right'>{`${formatDollars(budgetValue[1])}`}</Typography>
+                </Grid>
+
+                <Grid item xs={12}>
+                    {budgetSlider}
+                </Grid>
+
+            </Grid>
+      </Box>
     )
 }

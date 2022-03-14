@@ -104,8 +104,9 @@ export default function App() {
 
     const menu = (
         <Menu
-            extents={bounds}
-            onAfterChange={(k, min, max) => insertRange(k, min, max)}
+            budgetMin={bounds.budget[0]}
+            budgetMax={bounds.budget[1]}
+            onBudgetChange={(min, max) => insertRange('budget', min, max)}
         />
     )
 

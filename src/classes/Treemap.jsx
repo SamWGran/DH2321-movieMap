@@ -169,7 +169,7 @@ function mapToColorData(data, colorKey, gradient) {
     const [min, max] = d3.extent(keys)
     const scale = d3
         .scaleLog()
-        .domain([min, 1, max])
+        .domain([min, max])
         .range([0, 1])
     return keys.map(m => interp(scale(m)))
 }
