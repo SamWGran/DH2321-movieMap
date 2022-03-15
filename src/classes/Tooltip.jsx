@@ -4,13 +4,13 @@ import useMousePosition from './useMousePosition'
 
 import DonutChart from './DonutChart'
 
-function transformTitle(title, width) {
-	if(width > title.length*10)
+function transformTitle(title, width, fontSize = 10) {
+	if(width > title.length*fontSize)
 		return title
 	else{
 		var retS = ""
 		var i=0
-		while(retS.length*16 < width){
+		while((retS.length+2)*(fontSize*1.4) < width){
 			retS += title[i]
 			i++
 		}
@@ -18,6 +18,13 @@ function transformTitle(title, width) {
 			retS = retS.slice(0, -1);
 		return retS+"..."
 	}
+}
+
+function beautifyCash(num) {
+	if(Math.abs(num) > 1e6)
+		return (num.toString().slice(0,-6))+"."+num.toString().slice(-6, 5)+"M"
+	else
+		return num
 }
 
 /**
@@ -45,7 +52,7 @@ export default function Tooltip({
             <g>
                 <rect
                     width={width}
-                    height={height}
+                    height={height+25}
                     fill="white"
                     stroke="black"
                 />
@@ -53,7 +60,7 @@ export default function Tooltip({
                     x={width/2+100} 
                     y={(height/2)+15}
                     innerRadius={Math.min(width, height)*0.2} 
-                    outerRadius={Math.min(width, height)*0.4}
+                    outerRadius={Math.min(width, height)*0.35}
                     frontFill="red"
                     backFill="grey"
                     value={movie.vote_average}
@@ -63,11 +70,11 @@ export default function Tooltip({
                 <text>
                     <tspan x='1em' dy='2em'>{transformTitle(movie.title, 680)}</tspan>
                     <tspan x='1em' dy='2em'>{'Revenue:'}</tspan>
-                    <tspan x='6em'>{`${movie.revenue}$`}</tspan>
+                    <tspan x='6em'>{`$${beautifyCash(movie.revenue)}`}</tspan>
                     <tspan x='1em' dy='2em'>{'Budget:'}</tspan> 
-                    <tspan x='6em'>{`${movie.budget}$`}</tspan>
+                    <tspan x='6em'>{`$${beautifyCash(movie.budget)}`}</tspan>
                     <tspan x='1em' dy='2em'>{'Profit:'}</tspan>
-                    <tspan x='6em'>{`${movie.profit}$`}</tspan>
+                    <tspan x='6em'>{`$${beautifyCash(movie.profit)}`}</tspan>
                 </text>
             </g>
         ),

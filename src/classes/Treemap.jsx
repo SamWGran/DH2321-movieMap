@@ -100,6 +100,8 @@ function Group({x, y, width, height, data, onMouseEnter, onMouseLeave, children}
 					x={x+6} 
 					y={y+8}
 					dominantBaseline='hanging'
+					font-weight='bold'
+					pointer-events='none'
 				>
 					{data.name}
 				</text>
@@ -129,10 +131,16 @@ function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave, m
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
     />
-		{width > 40 ? 
-		<text x={x+(width/20)} y={y+(20)} className='tileText'>
-			<tspan>{transformTitle(movie.title, width)}</tspan>
-		</text>
+		{width > 40 && height > 25 ? 
+			<text 
+				x={x+(width/20)} 
+				y={y+(20)} 
+				className='tileText'
+				dominantBaseline='top'
+				pointer-events='none'
+				>
+				<tspan>{transformTitle(movie.title, width)}</tspan>
+			</text>
 		: null}
 	</>
     return panel
@@ -150,13 +158,13 @@ function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave, m
  * @param {number} width - width of surrounding tile.
  * @returns adjusted string.
  */ 
-function transformTitle(title, width) {
-	if(title.length*9 < width)
+function transformTitle(title, width, fontSize=9) {
+	if(title.length*fontSize < width)
 		return title
 	else{
 		var retS = ""
 		var i=0
-		while(retS.length*14 < width){
+		while((retS.length+2)*(fontSize*1.4) < width){
 			retS += title[i]
 			i++
 		}
