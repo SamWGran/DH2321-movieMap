@@ -205,57 +205,13 @@ export default function Menu({
     )
 
     const sliders = (
-        <Box bgcolor="mediumaquamarine" color="white">
-            <Box sx={{m:4, width: "392px" }}>
-                {budgetSlider}
-                {revenueSlider}
-                {profitSlider}
-                {roiSlider}
-            </Box> 
-        </Box>
+        <Box sx={{m:2}} color="white">
+            {budgetSlider}
+            {revenueSlider}
+            {profitSlider}
+            {roiSlider}
+        </Box> 
     )
 
     return sliders
 }
-
-/*
-
-            <Typography id="revenue-slider" gutterBottom>Revenue</Typography>
-            <Grid container spacing={2} alignItems="center">
-                <Grid item xs={6}>
-                    <Typography align='left'>{`${formatDollars(revenueValue[0])}`}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography align='right'>{`${formatDollars(revenueValue[1])}`}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    {revenueSlider}
-                </Grid>
-            </Grid>
-
-            <Typography id="profit-slider" gutterBottom>Profit</Typography>
-            <Grid container spacing={2} alignItems="center">
-                <Grid item xs={6}>
-                    <Typography align='left'>{`${formatDollars(profitValue[0])}`}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography align='right'>{`${formatDollars(profitValue[1])}`}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    {profitSlider}
-                </Grid>
-            </Grid>
-
-            <Typography id="roi-slider" gutterBottom>Return on Investment</Typography>
-            <Grid container spacing={2} alignItems="center">
-                <Grid item xs={6}>
-                    <Typography align='left'>{`${(roiValue[0]*100).toFixed(0)} %`}</Typography>
-                </Grid>
-                <Grid item xs={6}>
-                  <Typography align='right'>{`${(roiValue[1]*100).toFixed(0)} %`}</Typography>
-                </Grid>
-                <Grid item xs={12}>
-                    {roiSlider}
-                </Grid>
-            </Grid>
-*/
