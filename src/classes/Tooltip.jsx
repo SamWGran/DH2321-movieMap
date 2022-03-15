@@ -4,6 +4,22 @@ import useMousePosition from './useMousePosition'
 
 import DonutChart from './DonutChart'
 
+function transformTitle(title, width) {
+	if(width > title.length*10)
+		return title
+	else{
+		var retS = ""
+		var i=0
+		while(retS.length*16 < width){
+			retS += title[i]
+			i++
+		}
+		if(retS[retS.length-1] == " ")
+			retS = retS.slice(0, -1);
+		return retS+"..."
+	}
+}
+
 /**
  * React component that renders a tooltip.
  * @param {*} dx - Tooltips offset from the mouse in x direction.
@@ -35,7 +51,7 @@ export default function Tooltip({
                 />
                 <DonutChart 
                     x={width/2+100} 
-                    y={height/2}
+                    y={(height/2)+15}
                     innerRadius={Math.min(width, height)*0.2} 
                     outerRadius={Math.min(width, height)*0.4}
                     frontFill="red"
@@ -45,7 +61,7 @@ export default function Tooltip({
                     max={10}
                 />
                 <text>
-                    <tspan x='1em' dy='2em'>{movie.title}</tspan>
+                    <tspan x='1em' dy='2em'>{transformTitle(movie.title, 680)}</tspan>
                     <tspan x='1em' dy='2em'>{'Revenue:'}</tspan>
                     <tspan x='6em'>{`${movie.revenue}$`}</tspan>
                     <tspan x='1em' dy='2em'>{'Budget:'}</tspan> 

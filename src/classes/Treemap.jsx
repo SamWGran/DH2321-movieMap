@@ -80,32 +80,35 @@ function Group({x, y, width, height, data, onMouseEnter, onMouseLeave, children}
         .replaceAll("[^a-zA-Z0-9]", "-")
         .toLowerCase()
     return (
-        <g
-            className='group'
-            name={htmlName}
-            onMouseEnter={onMouseEnter}
-            onMouseLeave={onMouseLeave}
-        >
-            <rect
-                className='panel'
-                x={x} 
-                y= {y} 
-                width={width} 
-                height={height} 
-                fill='#01b4e4' 
-            />
-            <text
-                className='title'
-                x={x+6} 
-                y={y+8}
-                dominantBaseline='hanging'
-            >
-                {data.name}
-            </text>
-            <g name={'movies'}>
-                {children}
-            </g>
-        </g>
+		(width*height) > 4000 ? //TODO: make relative to screen size
+			<g
+				className='group'
+				name={htmlName}
+				onMouseEnter={onMouseEnter}
+				onMouseLeave={onMouseLeave}
+			>
+				<rect
+					className='panel'
+					x={x} 
+					y= {y} 
+					width={width} 
+					height={height} 
+					fill='#01b4e4' 
+				/>
+				<text
+					className='title'
+					x={x+6} 
+					y={y+8}
+					dominantBaseline='hanging'
+				>
+					{data.name}
+				</text>
+				<g name={'movies'}>
+					{children}
+				</g>
+			</g>
+			:
+			null
     )
 }
 /**
@@ -113,8 +116,9 @@ function Group({x, y, width, height, data, onMouseEnter, onMouseLeave, children}
  * @param {*} properties 
  * @returns 
  */
-function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave}) {
-    const panel = <rect
+function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave, movie}) {
+    const panel = <>
+		<rect
         className='tile'
         x={x}
         y={y}
@@ -125,12 +129,42 @@ function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave}) 
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
     />
+		{width > 40 ? 
+		<text x={x+(width/20)} y={y+(20)} className='tileText'>
+			<tspan>{transformTitle(movie.title, width)}</tspan>
+		</text>
+		: null}
+	</>
     return panel
 }
+
+
 
 /* 
     Helper functions
 */
+
+/**
+ * Transforms text (title) to width-adjusted length
+ * @param {string} title - the movie title string.
+ * @param {number} width - width of surrounding tile.
+ * @returns adjusted string.
+ */ 
+function transformTitle(title, width) {
+	if(title.length*9 < width)
+		return title
+	else{
+		var retS = ""
+		var i=0
+		while(retS.length*14 < width){
+			retS += title[i]
+			i++
+		}
+		if(retS[retS.length-1] == " ")
+			retS = retS.slice(0, -1);
+		return retS+"..."
+	}
+}
 
 /**
  * Checks if value is in range.
@@ -138,7 +172,7 @@ function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave}) 
  * @param {number} min - minimum value.
  * @param {number} max - maximum value.
  * @returns true if value is between min and max.
- */
+ */ 
 function between(value, min, max) {
     return min <= value && value <= max
 }
@@ -251,6 +285,6 @@ function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
     const root = {name: "root", children: nodes}
     //console.log(root)
     const tree = d3.hierarchy(root).sort(nodeSort).sum(n => n.size)
-    console.log(tree)
+    //console.log(tree)
     return tree;
 }
