@@ -26,7 +26,7 @@ export default function Treemap({
 }) {
     const layout =  d3
         .treemap()
-        .paddingInner(n => n.depth == 0 ? 10 : 1)
+        .paddingInner(n => n.depth == 0 ? 20 : 0)
         .paddingOuter(5)
         .paddingTop(28)
         .round(true)
@@ -121,6 +121,7 @@ function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave}) 
         width={width}
         height={height}
         fill={fill}
+        stroke={"purple"}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -152,7 +153,10 @@ function between(value, min, max) {
 function mapToSizeData(data, sizeKey) {
     const keys = data.map(m => m[sizeKey])
     const extent = d3.extent(keys)
-    const scale = d3.scalePow().domain(extent).range([0, 100]).exponent(2)
+    const scale = d3.scalePow()
+        .domain(extent)
+        .range([0, 100])
+        .exponent(2)
     return keys.map(scale)
 }
 
@@ -167,10 +171,11 @@ function mapToColorData(data, colorKey, gradient) {
     const interp = d3.interpolateRgbBasis(gradient)
     const keys = d3.map(data, m => m[colorKey])
     const [min, max] = d3.extent(keys)
+
     const scale = d3
         .scaleLog()
-        .domain([min, max])
-        .range([0, 1])
+        .domain([min, 1, max])
+        .range([0, 0.5, 1])
     return keys.map(m => interp(scale(m)))
 }
 

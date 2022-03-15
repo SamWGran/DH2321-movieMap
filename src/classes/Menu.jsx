@@ -15,7 +15,6 @@ export default function Menu({
     const [budgetTick, setBudgetTick] = useState([0, movies.length-1])
     const [profitTick, setProfitTick] = useState([0, movies.length-1])
     const [revenueTick, setRevenueTick] = useState([0, movies.length-1])
-    
 
     const roiSlider = useMemo(
         () => {

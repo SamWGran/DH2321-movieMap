@@ -47,11 +47,11 @@ export default function Tooltip({
                 <text>
                     <tspan x='1em' dy='2em'>{movie.title}</tspan>
                     <tspan x='1em' dy='2em'>{'Revenue:'}</tspan>
-                    <tspan x='6em'>{`${movie.revenue}$`}</tspan>
+                    <tspan x='6em'>{`$ ${movie.revenue}`}</tspan>
                     <tspan x='1em' dy='2em'>{'Budget:'}</tspan> 
-                    <tspan x='6em'>{`${movie.budget}$`}</tspan>
+                    <tspan x='6em'>{`$ ${movie.budget}`}</tspan>
                     <tspan x='1em' dy='2em'>{'Profit:'}</tspan>
-                    <tspan x='6em'>{`${movie.profit}$`}</tspan>
+                    <tspan x='6em'>{`$ ${movie.profit}`}</tspan>
                 </text>
             </g>
         ),

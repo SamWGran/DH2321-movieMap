@@ -9,7 +9,7 @@ import Menu from './Menu'
 import {deepEquals} from 'deep-equals'
 
 const defaultMovies = extrapolate(sample)
-const defaultGradient = ["purple", "green"]
+const defaultGradient = ["#bb12bb", "#12ee12"]
 
 export default function App() {
     const width = window.innerWidth-400
