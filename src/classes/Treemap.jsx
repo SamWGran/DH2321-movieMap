@@ -289,8 +289,8 @@ function mapToGroupData(data, groupKey) {
         index: i,
         group: g,
     }}))
-    console.log(membership)
-    console.log(tiles)
+    //console.log(membership)
+    //console.log(tiles)
     return tiles
 }
 /**
@@ -308,7 +308,7 @@ function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
     const colorData = mapToColorData(data, colorKey, gradient)
     const groupData = mapToGroupData(data, groupKey)
 
-    console.log(filters)
+    //console.log(filters)
 
     const filterLeaves = x => {
         const funs = filters.map(filter => {
@@ -354,6 +354,6 @@ function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
     const root = {name: "root", children: nodes}
     //console.log(root)
     const tree = d3.hierarchy(root).sort(nodeSort).sum(n => n.size)
-    console.log(tree)
+    //console.log(tree)
     return tree;
 }

@@ -6,6 +6,7 @@ import Treemap from './Treemap'
 import Tooltip from './Tooltip'
 import sample from '../data/sampleData'
 import Menu from './Menu'
+import Legend from './Legend'
 import {deepEquals} from 'deep-equals'
 
 const defaultMovies = extrapolate(sample)
@@ -55,7 +56,7 @@ export default function App() {
                 roi:     f('roi'),
             }
             Object.entries(current).forEach(([key, [min, max]]) => {
-                console.log(key, min, max)
+                //console.log(key, min, max)
                 insertRange(key, min, max)
             }) 
             return current
@@ -110,6 +111,12 @@ export default function App() {
             onRoiChange={(min, max) => insertRange('roi', min, max)}
         />
     )
+	
+	const legend = (
+		<Legend
+			height={window.innerHeight}
+		/>
+	)
 
     return (
       <div className='App'>
@@ -118,6 +125,7 @@ export default function App() {
             <div id='tooltip-container' >{renderedTooltip}</div>
         </div>
         <div id='toolbar-container' >{menu}</div>
+		<div id='legend-container' >{legend}</div>
       </div>
     );
 }
