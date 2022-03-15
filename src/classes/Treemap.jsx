@@ -194,8 +194,8 @@ function Group({x, y, width, height, data, onMouseEnter, onMouseLeave, children}
                 y={y+(20)} 
                 className='tileText'
                 dominantBaseline='top'
-                pointer-events='none'
-                style={{fontSize:'1em'}}
+                pointerEvents='none'
+                style={{fontSize:'0.9rem'}}
                 >
                 <tspan>{transformTitle(movie.title, width)}</tspan>
             </text>

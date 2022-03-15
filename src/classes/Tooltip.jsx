@@ -46,6 +46,12 @@ export default function Tooltip({
 }) {
     const [mouseX, mouseY] = useMousePosition()
 
+    
+    const cr = Math.min(width, height)*0.1
+    const cr2 = Math.min(width, height)*0.14
+    const cx = width-cr2-20
+    const cy = height-cr2-20
+    
     // Returns empty if no movie is found!
     const content = useMemo(
         () => (!movie ? <></> :
@@ -57,24 +63,32 @@ export default function Tooltip({
                     stroke="black"
                 />
                 <DonutChart 
-                    x={width/2+100} 
-                    y={height/2}
-                    innerRadius={Math.min(width, height)*0.2} 
-                    outerRadius={Math.min(width, height)*0.4}
-                    frontFill="red"
+                    x={cx}
+                    y={cy}
+                    innerRadius={cr}
+                    outerRadius={cr2}
+                    frontFill="gold"
                     backFill="grey"
                     value={movie.vote_average}
                     min={0}
                     max={10}
                 />
+                <text x={cx} y={(cy-cr2-10)} dominantBaseline='middle' textAnchor='middle'>
+                    Rating
+                </text>
+                <text x={cx} y={cy} dominantBaseline='middle' textAnchor='middle'>
+                    {movie.vote_average}
+                </text>
                 <text>
-                    <tspan x='1em' dy='2em'>{transformTitle(movie.title, 300, 12)}</tspan>
-                    <tspan x='1em' dy='2em'>{'Revenue:'}</tspan>
-                    <tspan x='6em'>{formatDollars(movie.revenue)}</tspan>
+                    <tspan x='1em' dy='2em'>{transformTitle(movie.title, 680)}</tspan>
                     <tspan x='1em' dy='2em'>{'Budget:'}</tspan> 
                     <tspan x='6em'>{formatDollars(movie.budget)}</tspan>
+                    <tspan x='1em' dy='2em'>{'Revenue:'}</tspan>
+                    <tspan x='6em'>{formatDollars(movie.revenue)}</tspan>
                     <tspan x='1em' dy='2em'>{'Profit:'}</tspan>
                     <tspan x='6em'>{formatDollars(movie.profit)}</tspan>
+                    <tspan x='1em' dy='2em'>{'Return on Investment:'}</tspan>
+                    <tspan x='12em'>{(movie.roi*100-100).toFixed(0)+"%"}</tspan>
                 </text>
             </g>
         ),
