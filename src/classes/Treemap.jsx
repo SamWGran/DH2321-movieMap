@@ -1,6 +1,60 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import * as d3 from 'd3'
 
+function movable(elmnt) {
+    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+  
+    function dragMouseDown(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // get the mouse cursor position at startup:
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      document.onmouseup = closeDragElement;
+      // call a function whenever the cursor moves:
+      document.onmousemove = elementDrag;
+    }
+  
+    function elementDrag(e) {
+      e = e || window.event;
+      e.preventDefault();
+      // calculate the new cursor position:
+      pos1 = pos3 - e.clientX;
+      pos2 = pos4 - e.clientY;
+      pos3 = e.clientX;
+      pos4 = e.clientY;
+      // set the element's new position:
+      elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+      elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+    }
+  
+    function closeDragElement() {
+      // stop moving when mouse button is released:
+      document.onmouseup = null;
+      document.onmousemove = null;
+    }
+      elmnt.onmousedown = dragMouseDown;
+      elmnt.classList.add('movable');
+  }
+  
+  function zoomable(elmnt) {
+    function zoom(event) {
+      event.preventDefault();
+    
+      scale += event.deltaY * -0.005;
+    
+      // Restrict scale
+      scale = Math.min(Math.max(1, scale), 8);
+    
+      // Apply scale transform
+      elmnt.style.transform = `scale(${scale})`;
+      elmnt.style.fontSize = `${1/scale}em`;
+    }
+    
+    let scale = 1;
+    elmnt.onwheel = zoom;
+  }
+
 /**
  * Treemap is a React component that represents a treemap.
  * @param gradient - Array of colors to interpolate into the gradient.
@@ -40,6 +94,11 @@ export default function Treemap({
         gradient,
         filters
     )
+    useEffect(() => {
+        const elmnt = document.getElementById("moviemap-container")
+        movable(elmnt)
+        zoomable(elmnt)
+    })
     const treemap = layout(tree)
     if (!treemap.children) {
         return <text>no movies</text>
