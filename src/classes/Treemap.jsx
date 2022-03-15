@@ -80,11 +80,11 @@ export default function Treemap({
 }) {
     const layout =  d3
         .treemap()
-        .paddingInner(n => n.depth == 0 ? 10 : 1)
+        .paddingInner(n => n.depth == 0 ? 20 : 0)
         .paddingOuter(5)
         .paddingTop(28)
         .round(true)
-        .tile(d3.treemapBinary)
+        .tile(d3.treemapSquarify)
         .size([width, height])
     const tree = mapToTreeData(
         data, 
@@ -101,7 +101,9 @@ export default function Treemap({
     })
     const treemap = layout(tree)
     if (!treemap.children) {
-        return <text>no movies</text>
+        return <svg width={width} height={height} x={x} y={y} fill={'blue'}>
+            <rect fill='blue'/>
+        </svg>
     }
     return <svg width={width} height={height} x={x} y={y}> {
         treemap.children.map(g => <Group
@@ -178,6 +180,7 @@ function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave}) 
         width={width}
         height={height}
         fill={fill}
+        stroke={"purple"}
         onClick={onClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
@@ -209,7 +212,10 @@ function between(value, min, max) {
 function mapToSizeData(data, sizeKey) {
     const keys = data.map(m => m[sizeKey])
     const extent = d3.extent(keys)
-    const scale = d3.scaleLinear(extent, [0, 100])
+    const scale = d3.scalePow()
+        .domain(extent)
+        .range([0, 100])
+        .exponent(2)
     return keys.map(scale)
 }
 
@@ -224,11 +230,11 @@ function mapToColorData(data, colorKey, gradient) {
     const interp = d3.interpolateRgbBasis(gradient)
     const keys = d3.map(data, m => m[colorKey])
     const [min, max] = d3.extent(keys)
+
     const scale = d3
-        .scalePow()
-        .domain([min, 0, max])
-        .range([0, 1])
-        .exponent(0.1);
+        .scaleLog()
+        .domain([min, 1, max])
+        .range([0, 0.5, 1])
     return keys.map(m => interp(scale(m)))
 }
 
@@ -263,15 +269,19 @@ function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
     const sizeData = mapToSizeData(data, sizeKey)
     const colorData = mapToColorData(data, colorKey, gradient)
     const groupData = mapToGroupData(data, groupKey)
+
+    console.log(filters)
+
     const filterLeaves = x => {
-        const funs = Object.entries(filters).map(filter => {
+        const funs = filters.map(filter => {
             const min = filter.min
             const max = filter.max
             const key = filter.key
             const fun = m => between(m[key], min, max)
             return fun
         })
-        return funs.map(f => f(data[x.index])).every(b=>b)
+        const results = funs.map(f => f(data[x.index]))
+        return results.length == 0 || results.every(b=>b)
     }
     const mapLeaves = x => {
         const index = x.index
@@ -282,7 +292,8 @@ function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
     }
     const filterNodes = x => { 
         const percentile = d3.sum(x[1].map(x => x.size))
-        return percentile > 1
+        //return percentile > 1
+        return true
     }
     const mapNodes = kvp => {
         const name = kvp[0]
@@ -299,11 +310,11 @@ function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
         return nodeOrder(b) - nodeOrder(a)
     }
     const leaves = groupData.filter(filterLeaves).map(mapLeaves)
-    console.log(leaves)
+    //console.log(leaves)
     const nodes = d3.groups(leaves, x => x.group).filter(filterNodes).map(mapNodes)
-    console.log(nodes)
+    //console.log(nodes)
     const root = {name: "root", children: nodes}
-    console.log(root)
+    //console.log(root)
     const tree = d3.hierarchy(root).sort(nodeSort).sum(n => n.size)
     console.log(tree)
     return tree;

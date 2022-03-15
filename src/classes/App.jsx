@@ -1,44 +1,68 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 import '../styles/MovieMap.css'
-import Treemap from './Treemap';
-import Tooltip from './Tooltip';
+import '../styles/moviemapStyles.css'
+import Treemap from './Treemap'
+import Tooltip from './Tooltip'
 import sample from '../data/sampleData'
+import Menu from './Menu'
+import {deepEquals} from 'deep-equals'
 
 const defaultMovies = extrapolate(sample)
-const defaultGradient = ["red", "gray", "green"]
+const defaultGradient = ["#bb12bb", "#12ee12"]
 
 export default function App() {
-    const [data, setData] = useState(defaultMovies)
-    const [gradient, setGradient] = useState(defaultGradient)
-    const [sizeKey, setSizeKey] = useState('budget')
-    const [colorKey, setColorKey] = useState('profit')
-    const [groupKey, setGroupKey] = useState('genres')
-    const [filters, setFilters] = useState({})
-    const [tooltip, setTooltip] = useState({movie: null, visibility: 'hidden'})
-    
-    const width = 1600
-    const height = 900
+    const width = window.innerWidth-400
+    const height = window.innerHeight
     const x = 0
     const y = 0
 
-    const showTooltip = () => setTooltip({visibility: 'visible'})
-    const hideTooltip = () => setTooltip({visibility: 'visible'})
-    const swapTooltip = (movie) => setTooltip({movie: movie})
+    /**
+     * State objects
+     */
+    const [data, setData] = useState(defaultMovies)
+    const [gradient, setGradient] = useState(defaultGradient)
+    const [sizeKey, setSizeKey] = useState('budget')
+    const [colorKey, setColorKey] = useState('roi')
+    const [groupKey, setGroupKey] = useState('genres')
 
-    useEffect(
+    const [tooltip, setTooltip] = useState({movie: null, visibility: 'hidden'})
+    const showTooltip = () => setTooltip(prev => ({...prev, ...{visibility: 'visible'}}))
+    const hideTooltip = () => setTooltip(prev => ({...prev, ...{visibility: 'hidden'}}))
+    const swapTooltip = (movie) => setTooltip(prev => ({...prev, ...{movie: movie}}))
+    
+    const [ranges, setRanges] = useState([])
+    const insertRange = (key, min, max) => {
+        const index = ranges.findIndex(x => x.key === key)
+        if (index === -1) {
+            setRanges(prev => [...prev, {key, min, max}])
+        } else {
+            setRanges(prev => {
+                let copy = [...prev]
+                copy[index] = {key, min, max}
+                return copy
+            })
+        }
+    }
+
+    const bounds = useMemo(
         () => {
-            const intoFilter = key => {
-                const [min, max] = d3.extent(data.map(m=>m[key]))
-                return {key: {min, max}}
+            const f = key => d3.extent(data.map(m=>m[key]))
+            const current = {
+                budget:  f('budget'),
+                revenue: f('revenue'),
+                profit:  f('profit'),
+                roi:     f('roi'),
             }
-            //setFilters(intoFilter('budget'))
-            //setFilters(intoFilter('revenue'))
-            //setFilters(intoFilter('profit'))
-            //setFilters(intoFilter('profitRatio'))
+            Object.entries(current).forEach(([key, [min, max]]) => {
+                console.log(key, min, max)
+                insertRange(key, min, max)
+            }) 
+            return current
         },
         [data]
     )
+    
 
     const renderedTooltip = useMemo(
         () => (
@@ -58,7 +82,7 @@ export default function App() {
     const renderedMovieMap = useMemo(
         () => (
             <Treemap 
-                className='movie-map' 
+                className='movie-map'
                 x={x}
                 y={y}
                 width={width}
@@ -71,16 +95,31 @@ export default function App() {
                 sizeKey={sizeKey}
                 colorKey={colorKey}
                 groupKey={groupKey}
-                filters={filters}
+                filters={ranges}
             />
         ),
-        [data, gradient, sizeKey, colorKey, groupKey, filters]
+        [data, gradient, sizeKey, colorKey, groupKey, ranges]
+    )
+
+    const menu = (
+        <Menu
+            movies={data}
+            onBudgetChange={(min, max) => insertRange('budget', min, max)}
+            onRevenueChange={(min, max) => insertRange('revenue', min, max)}
+            onProfitChange={(min, max) => insertRange('profit', min, max)}
+            onRoiChange={(min, max) => insertRange('roi', min, max)}
+        />
     )
 
     return (
       <div className='App'>
-          <div id='moviemap-container' >{renderedMovieMap}</div>
-          {renderedTooltip}
+          <div className='horizontal-flex-container'>
+            {menu}
+            <div>
+                <div id='moviemap-container' >{renderedMovieMap}</div>
+                {renderedTooltip}
+            </div>
+          </div>
       </div>
     );
 }
@@ -88,7 +127,7 @@ export default function App() {
 function extrapolate(data) {
     return data.map(m => { return {
         profit: m.revenue - m.budget,
-        profitRatio: m.revenue / m.budget,
+        roi: m.revenue / m.budget,
         ...m,
     }})
 }
