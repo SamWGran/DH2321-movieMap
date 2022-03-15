@@ -3,7 +3,7 @@
 .vertical-flex-container {
   display: flex;
   min-height: fit-content;
-  min-width: 400px;
+  min-width: fit-content;
   flex-direction: column;
   justify-content: center;
 }

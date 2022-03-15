@@ -9,12 +9,11 @@ import Menu from './Menu'
 import {deepEquals} from 'deep-equals'
 
 const defaultMovies = extrapolate(sample)
-const defaultGradient = ["purple", "yellow", "green"]
-
+const defaultGradient = ["purple", "green"]
 
 export default function App() {
-    const width = 1200
-    const height = 900
+    const width = window.innerWidth-400
+    const height = window.innerHeight
     const x = 0
     const y = 0
 
@@ -24,7 +23,7 @@ export default function App() {
     const [data, setData] = useState(defaultMovies)
     const [gradient, setGradient] = useState(defaultGradient)
     const [sizeKey, setSizeKey] = useState('budget')
-    const [colorKey, setColorKey] = useState('profitRatio')
+    const [colorKey, setColorKey] = useState('roi')
     const [groupKey, setGroupKey] = useState('genres')
 
     const [tooltip, setTooltip] = useState({movie: null, visibility: 'hidden'})
@@ -50,10 +49,10 @@ export default function App() {
         () => {
             const f = key => d3.extent(data.map(m=>m[key]))
             const current = {
-                budget:      f('budget'),
-                revenue:     f('revenue'),
-                profit:      f('profit'),
-                profitRatio: f('profitRatio'),
+                budget:  f('budget'),
+                revenue: f('revenue'),
+                profit:  f('profit'),
+                roi:     f('roi'),
             }
             Object.entries(current).forEach(([key, [min, max]]) => {
                 console.log(key, min, max)
@@ -104,9 +103,11 @@ export default function App() {
 
     const menu = (
         <Menu
-            budgetMin={bounds.budget[0]}
-            budgetMax={bounds.budget[1]}
+            movies={data}
             onBudgetChange={(min, max) => insertRange('budget', min, max)}
+            onRevenueChange={(min, max) => insertRange('revenue', min, max)}
+            onProfitChange={(min, max) => insertRange('profit', min, max)}
+            onRoiChange={(min, max) => insertRange('roi', min, max)}
         />
     )
 
@@ -126,7 +127,7 @@ export default function App() {
 function extrapolate(data) {
     return data.map(m => { return {
         profit: m.revenue - m.budget,
-        profitRatio: m.revenue / m.budget,
+        roi: m.revenue / m.budget,
         ...m,
     }})
 }

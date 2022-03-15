@@ -228,7 +228,8 @@ function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
     }
     const filterNodes = x => { 
         const percentile = d3.sum(x[1].map(x => x.size))
-        return percentile > 1
+        //return percentile > 1
+        return true
     }
     const mapNodes = kvp => {
         const name = kvp[0]
