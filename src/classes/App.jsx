@@ -69,7 +69,7 @@ export default function App() {
             <Tooltip
                 dx={75}
                 dy={-10}
-                boundingBox={[x, y, width, height]}
+                boundingBox={[0, 0, window.innerWidth, window.innerHeight]}
                 width={400}
                 height={200}
                 visibility={tooltip.visibility}
@@ -85,8 +85,8 @@ export default function App() {
                 className='movie-map'
                 x={x}
                 y={y}
-                width={width}
-                height={height}
+                width={Math.floor(window.innerWidth*0.83)}
+                height={window.innerHeight}
                 onShowTooltip={showTooltip}
                 onHideTooltip={hideTooltip}
                 onSwapTooltip={swapTooltip}
@@ -113,13 +113,11 @@ export default function App() {
 
     return (
       <div className='App'>
-          <div className='horizontal-flex-container'>
-            {menu}
-            <div>
-                <div id='moviemap-container' >{renderedMovieMap}</div>
-                {renderedTooltip}
-            </div>
-          </div>
+        <div>
+            <div id='moviemap-container' >{renderedMovieMap}</div>
+            <div id='tooltip-container' >{renderedTooltip}</div>
+        </div>
+        <div id='toolbar-container' >{menu}</div>
       </div>
     );
 }
