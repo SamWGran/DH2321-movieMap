@@ -3,6 +3,29 @@ import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import useMousePosition from './useMousePosition'
 
 import DonutChart from './DonutChart'
+import formatDollars from './formatDollars'
+
+/**
+ * Transforms text (title) to width-adjusted length
+ * @param {string} title - the movie title string.
+ * @param {number} width - width of surrounding tile.
+ * @returns adjusted string.
+ */ 
+ function transformTitle(title, width, fontSize=10) {
+    if(title.length*fontSize < width)
+        return title
+    else{
+        var retS = ""
+        var i=0
+        while((retS.length+2)*(fontSize*1.4) < width){
+            retS += title[i]
+            i++
+        }
+        if(retS[retS.length-1] == " ")
+            retS = retS.slice(0, -1);
+        return retS+"..."
+    }
+}
 
 /**
  * React component that renders a tooltip.
@@ -45,13 +68,13 @@ export default function Tooltip({
                     max={10}
                 />
                 <text>
-                    <tspan x='1em' dy='2em'>{movie.title}</tspan>
+                    <tspan x='1em' dy='2em'>{transformTitle(movie.title, 300, 12)}</tspan>
                     <tspan x='1em' dy='2em'>{'Revenue:'}</tspan>
-                    <tspan x='6em'>{`$ ${movie.revenue}`}</tspan>
+                    <tspan x='6em'>{formatDollars(movie.revenue)}</tspan>
                     <tspan x='1em' dy='2em'>{'Budget:'}</tspan> 
-                    <tspan x='6em'>{`$ ${movie.budget}`}</tspan>
+                    <tspan x='6em'>{formatDollars(movie.budget)}</tspan>
                     <tspan x='1em' dy='2em'>{'Profit:'}</tspan>
-                    <tspan x='6em'>{`$ ${movie.profit}`}</tspan>
+                    <tspan x='6em'>{formatDollars(movie.profit)}</tspan>
                 </text>
             </g>
         ),

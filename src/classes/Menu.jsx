@@ -38,17 +38,17 @@ export default function Menu({
             )
             const textLeft = (
                 <Typography align='left'>
-                    {formatDollars(rois[roiTick[0]])}
+                    {(rois[roiTick[0]]*100-100).toFixed(0)+'%'}
                 </Typography>
             ) 
             const textRight = (
                 <Typography align='right'>
-                    {formatDollars(rois[roiTick[1]])}
+                    {(rois[roiTick[1]]*100-100).toFixed(0)+'%'}
                 </Typography>
             )
             const header = (
                 <Typography id="roi-slider" gutterBottom>
-                    Roi
+                    Return on Investment
                 </Typography>
             )
             return (

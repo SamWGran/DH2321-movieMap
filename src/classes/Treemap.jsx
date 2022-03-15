@@ -151,12 +151,14 @@ function Group({x, y, width, height, data, onMouseEnter, onMouseLeave, children}
                 y= {y} 
                 width={width} 
                 height={height} 
-                fill='#01b4e4' 
+                fill='#3d3c3e' 
             />
             <text
                 className='title'
                 x={x+6} 
                 y={y+8}
+                fill={'#eee'}
+                style={{fontSize:'1rem', color: 'white'}}
                 dominantBaseline='hanging'
             >
                 {data.name}
@@ -172,8 +174,9 @@ function Group({x, y, width, height, data, onMouseEnter, onMouseLeave, children}
  * @param {*} properties 
  * @returns 
  */
-function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave}) {
-    const panel = <rect
+ function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave, movie}) {
+    const panel = <>
+        <rect
         className='tile'
         x={x}
         y={y}
@@ -185,12 +188,47 @@ function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave}) 
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
     />
+        {width > 40 && height > 25 ? 
+            <text 
+                x={x+(width/20)} 
+                y={y+(20)} 
+                className='tileText'
+                dominantBaseline='top'
+                pointer-events='none'
+                style={{fontSize:'1em'}}
+                >
+                <tspan>{transformTitle(movie.title, width)}</tspan>
+            </text>
+        : null}
+    </>
     return panel
 }
 
 /* 
     Helper functions
 */
+
+/**
+ * Transforms text (title) to width-adjusted length
+ * @param {string} title - the movie title string.
+ * @param {number} width - width of surrounding tile.
+ * @returns adjusted string.
+ */ 
+ function transformTitle(title, width, fontSize=10) {
+    if(title.length*fontSize < width)
+        return title
+    else{
+        var retS = ""
+        var i=0
+        while((retS.length+2)*(fontSize*1.4) < width){
+            retS += title[i]
+            i++
+        }
+        if(retS[retS.length-1] == " ")
+            retS = retS.slice(0, -1);
+        return retS+"..."
+    }
+}
 
 /**
  * Checks if value is in range.
