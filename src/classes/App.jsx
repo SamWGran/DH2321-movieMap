@@ -116,7 +116,7 @@ export default function App() {
           <div className='horizontal-flex-container'>
             {menu}
             <div>
-                {renderedMovieMap}
+                <div id='moviemap-container' >{renderedMovieMap}</div>
                 {renderedTooltip}
             </div>
           </div>
