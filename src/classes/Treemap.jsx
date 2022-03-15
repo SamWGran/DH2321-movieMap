@@ -95,7 +95,7 @@ export default function Treemap({
         filters
     )
     useEffect(() => {
-        const elmnt = document.getElementById("root")
+        const elmnt = document.getElementById("moviemap-container")
         movable(elmnt)
         zoomable(elmnt)
     })

@@ -21,11 +21,6 @@ export default function App() {
     const height = 900
     const x = 0
     const y = 0
-    const style = {
-        backgroundColor: '#0d253f', 
-        width:'100%', 
-        height:'100%',
-    }
 
     const showTooltip = () => setTooltip({visibility: 'visible'})
     const hideTooltip = () => setTooltip({visibility: 'visible'})
@@ -83,8 +78,8 @@ export default function App() {
     )
 
     return (
-      <div className='App' style={style}>
-          {renderedMovieMap}
+      <div className='App'>
+          <div id='moviemap-container' >{renderedMovieMap}</div>
           {renderedTooltip}
       </div>
     );
