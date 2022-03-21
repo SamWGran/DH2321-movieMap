@@ -102,3 +102,26 @@ a {
 	font-size: 0.6em;
 	color: white;
 }
+
+#AboutUs {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 20;
+    color: #D0BDAD;
+}
+
+.hidden {
+    display: none;
+}
+
+.AboutUs-container {
+    position: relative;
+    top:0;
+    left:0;
+    background-color: #202020;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    opacity: .95;
+}

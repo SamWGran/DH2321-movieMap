@@ -17,7 +17,7 @@ export default function Menu({
 			<p className="legend-text">Revenue</p>
 			<img src={legend02}/>
 			<div></div>
-			<a href="#">About us</a>
+			<a href="#" onClick={() => {document.getElementById('AboutUs').classList.remove('hidden')}}>About us</a>
 			
 		</>
     )
