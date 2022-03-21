@@ -32,7 +32,7 @@
     background-color: #3d3c3e;
 }
 
-rect.tile:hover {
+rect.tile.hovering {
     opacity: 0.35;
 }
 
