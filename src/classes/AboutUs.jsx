@@ -40,7 +40,10 @@ export default function AboutUs() {
 
     return (
       <div id='AboutUs' className='hidden'>
-        <div onClick={() => {document.getElementById('AboutUs').classList.add('hidden')}}>{button}</div>
+        <div onClick={() => {
+            document.getElementById('AboutUs').classList.add('hidden')
+            document.getElementsByClassName('App')[0].classList.remove('blurred')
+            }}>{button}</div>
         <div className='AboutUs-container'>
             <div style={{float:'left', width:'25vw', padding: '2em', boxSizing:'border-box'}}>
                 {aboutTheProject}

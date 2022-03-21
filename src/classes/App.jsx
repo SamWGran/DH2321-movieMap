@@ -135,10 +135,11 @@ export default function App() {
 	)
 
     return (
+    <>
+      <div>
+        <AboutUs/>
+      </div>
       <div className='App'>
-        <div>
-            <AboutUs/>
-        </div>
         <div>
             <div id='moviemap-container' >{renderedMovieMap}</div>
             <div id='tooltip-container' >{renderedTooltip}</div>
@@ -146,6 +147,7 @@ export default function App() {
         <div id='toolbar-container' >{menu}</div>
 		<div id='legend-container' >{legend}</div>
       </div>
+      </>
     );
 }
 

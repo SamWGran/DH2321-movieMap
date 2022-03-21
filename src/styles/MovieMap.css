@@ -115,6 +115,10 @@ a {
     display: none;
 }
 
+.blurred {
+    filter: blur(10px)
+}
+
 .AboutUs-container {
     position: relative;
     top:0;
@@ -123,5 +127,5 @@ a {
     width: 100vw;
     height: 100vh;
     overflow: hidden;
-    opacity: .95;
+    opacity: .8;
 }
