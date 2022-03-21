@@ -27,11 +27,21 @@ export default function App() {
     const [colorKey, setColorKey] = useState('roi')
     const [groupKey, setGroupKey] = useState('genres')
 
+    const [hiddenGroups, setHiddenGroups] = useState([])
+
     const [tooltip, setTooltip] = useState({movie: null, visibility: 'hidden'})
     const showTooltip = () => setTooltip(prev => ({...prev, ...{visibility: 'visible'}}))
     const hideTooltip = () => setTooltip(prev => ({...prev, ...{visibility: 'hidden'}}))
     const swapTooltip = (movie) => setTooltip(prev => ({...prev, ...{movie: movie}}))
     
+    const hideGroup = (group) => {
+        setHiddenGroups(prev => [group, ...prev])
+    }
+
+    const showGroup = (group) => {
+        setHiddenGroups(prev => prev.filter(m => m != group))
+    }
+
     const [ranges, setRanges] = useState([])
     const insertRange = (key, min, max) => {
         const index = ranges.findIndex(x => x.key === key)
@@ -97,9 +107,10 @@ export default function App() {
                 colorKey={colorKey}
                 groupKey={groupKey}
                 filters={ranges}
+                hiddenGroups={hiddenGroups}
             />
         ),
-        [data, gradient, sizeKey, colorKey, groupKey, ranges]
+        [data, gradient, sizeKey, colorKey, groupKey, ranges, hiddenGroups]
     )
 
     const menu = (
@@ -109,6 +120,10 @@ export default function App() {
             onRevenueChange={(min, max) => insertRange('revenue', min, max)}
             onProfitChange={(min, max) => insertRange('profit', min, max)}
             onRoiChange={(min, max) => insertRange('roi', min, max)}
+            onHide={hideGroup}
+            onShow={showGroup}
+            groupKey={groupKey}
+            hidden={hiddenGroups}
         />
     )
 	

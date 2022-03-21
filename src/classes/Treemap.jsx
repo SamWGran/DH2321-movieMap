@@ -74,6 +74,7 @@ export default function Treemap({
     groupKey,
     data,
     filters,
+    hiddenGroups,
     onSwapTooltip,
     onShowTooltip,
     onHideTooltip,
@@ -92,7 +93,8 @@ export default function Treemap({
         colorKey, 
         groupKey, 
         gradient,
-        filters
+        filters,
+        hiddenGroups
     )
     useEffect(() => {
         const elmnt = document.getElementById("moviemap-container")
@@ -282,15 +284,14 @@ function mapToColorData(data, colorKey, gradient) {
  * @param {*} groupKey - The field used to get which groups and object belongs to.
  * @returns Array of {index, group} pairs.
  */
-function mapToGroupData(data, groupKey) {
+function mapToGroupData(data, groupKey, hidden) {
     const nameOf = x => x.name ? x.name : x
     const membership = data.map(m => [m[groupKey]].flat().map(nameOf))
     const tiles = data.flatMap((_, i) => membership[i].map(g => { return {
         index: i,
         group: g,
     }}))
-    //console.log(membership)
-    //console.log(tiles)
+    .filter(t => !hidden.includes(t.group))
     return tiles
 }
 /**
@@ -303,10 +304,10 @@ function mapToGroupData(data, groupKey) {
  * @param {*} filters - Filters used to filter out data.
  * @returns A d3 Treemap root node. Each leaf has the data {index, group, color, size}.
  */
-function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters) {
+function mapToTreeData(data, sizeKey, colorKey, groupKey, gradient, filters, hidden) {
     const sizeData = mapToSizeData(data, sizeKey)
     const colorData = mapToColorData(data, colorKey, gradient)
-    const groupData = mapToGroupData(data, groupKey)
+    const groupData = mapToGroupData(data, groupKey, hidden)
 
     //console.log(filters)
 
