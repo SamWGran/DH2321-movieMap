@@ -54,6 +54,31 @@ function movable(elmnt) {
     let scale = 1;
     elmnt.onwheel = zoom;
   }
+  
+  function hoverable(clss) {
+    const elements = document.getElementsByClassName(clss)
+    for (let i = 0; i < elements.length; i++) {
+        const elmnt = elements[i]
+        const movieclass = elmnt.classList[0] != "tile"? elmnt.classList[0] : elmnt.classList[1]
+
+        function hover(event) {
+            const movie = document.getElementsByClassName(movieclass)
+            for (let j = 0; j < movie.length; j++) {
+                movie[j].classList.add("hovering")
+            }
+        }
+
+        function unhover(event) {
+            const movie = document.getElementsByClassName(movieclass)
+            for (let j = 0; j < movie.length; j++) {
+                movie[j].classList.remove("hovering")
+            }
+        }
+        
+        elmnt.onmouseover = hover;
+        elmnt.onmouseout = unhover;
+    }
+  }
 
 /**
  * Treemap is a React component that represents a treemap.
@@ -98,6 +123,7 @@ export default function Treemap({
         const elmnt = document.getElementById("moviemap-container")
         movable(elmnt)
         zoomable(elmnt)
+        hoverable('tile')
     })
     const treemap = layout(tree)
     if (!treemap.children) {
@@ -177,7 +203,7 @@ function Group({x, y, width, height, data, onMouseEnter, onMouseLeave, children}
  function Tile({x, y, width, height, fill, onClick, onMouseEnter, onMouseLeave, movie}) {
     const panel = <>
         <rect
-        className='tile'
+        className={'tile tile-' + movie.id}
         x={x}
         y={y}
         width={width}
