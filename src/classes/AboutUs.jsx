@@ -42,7 +42,13 @@ export default function AboutUs() {
 
     const button = <div style={{fontSize:'2em', color:'red', fontWeight:'bolder',backgroundColor:'white',borderRadius:'2em',position:'absolute',top:'1rem',left:'1rem',zIndex:'30',width:'1em',height:'1em',textAlign:'center',lineHeight:'0.75em'}}>x</div>
 
-    const lowe = aboutPerson('lowe.png', 'Lowe', <>Hejhejhejhejehhejhee<b>HEJ</b>hej</>)
+    const lowe = aboutPerson('lowe.png', 'Lowe Bonnevier', (
+        <>As of writing (March 2022) I am studying my fourth year at KTH. Both my bachelor's degree and master's degree are in computer science with focus on visualization. On this project I have primarily been working on integrating D3.js with React.
+        <br/>
+        <div style={{marginTop:'0.5em', display:'inline-block',borderTop: '2px', borderTopColor:'#D0BDAD', borderTopStyle:'solid'}}>
+        </div>
+        </>
+    ))
     const pontus = aboutPerson('pontus.png', 'Pontus Asp', (
         <>
             As of writing (March 2022), I am currently studying my fourth year at KTH. I have been studying information and communication technology on bachelor level and now I am studying computer science, with visualization and interactive graphics as subtrack.
