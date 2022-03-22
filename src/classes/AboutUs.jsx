@@ -69,7 +69,22 @@ export default function AboutUs() {
     const sources = <><h2>Sources</h2><span>https://themoviedb.org<br/>
     https://github.com/SamWGran/DH2321-movieMap</span></>
 
-    const button = <div style={{fontSize:'2em', color:'red', fontWeight:'bolder',backgroundColor:'white',borderRadius:'2em',position:'absolute',top:'1rem',left:'1rem',zIndex:'30',width:'1em',height:'1em',textAlign:'center',lineHeight:'0.75em'}}>x</div>
+    const button = <div className='close-button' style={{
+        fontSize:'2em', 
+        color:'white', 
+        userSelect: 'none',
+        fontWeight:'bolder', 
+        backgroundColor:'#202020', 
+        borderRadius:'2em',
+        position:'absolute',
+        top:'1rem',
+        left:'1rem',
+        zIndex:'30',
+        width:'1em',
+        height:'1em',
+        textAlign:'center',
+        lineHeight:'0.75em'
+    }}>x</div>
 
     const lowe = {
         name: 'Lowe Bonnevier',
@@ -78,6 +93,7 @@ export default function AboutUs() {
           <>As of writing (March 2022) I am studying my fourth year at KTH. Both my bachelor's degree and master's degree are in computer science with focus on visualization. On this project I have primarily been working on integrating D3.js with React.
           <br/>
           <div style={{marginTop:'0.5em', display:'inline-block',borderTop: '2px', borderTopColor:'#D0BDAD', borderTopStyle:'solid'}}>
+            <span>- You can find more information about me on my <a href="http://github.com/obewol" target="_blank">GitHub Page</a>.</span>
           </div>
           </>
         ),
@@ -111,13 +127,13 @@ export default function AboutUs() {
     }
 
     const andreas = {
-        name: 'Andreas',
+        name: 'Andreas Sjödin',
         img: 'andreas.png',
         about: (
             <>
-                As of writing (March 2022), I am currently studying my fourth year at KTH. I have been studying information and communication technology on bachelor level and now I am studying computer science, with visualization and interactive graphics as subtrack.
+                Currently I'm studying my fourth year at KTH. I recently finished by bachelors thesis and I am now studying for the TCSCM masters track in the visualization and interactive graphics subtrack.
                 <br/><div style={{marginTop:'0.5em', display:'inline-block',borderTop: '2px', borderTopColor:'#D0BDAD', borderTopStyle:'solid'}}>
-                    <span>- You can find more information on my <a href="http://github.com/andreassjodin" target="_blank">GitHub Page</a>.</span>
+                    <span>- You can find more information about me on my <a href="http://github.com/andreassjodin" target="_blank">GitHub Page</a>.</span>
                 </div>
             </>
         ),
@@ -131,7 +147,7 @@ export default function AboutUs() {
     }
 
     const simon = {
-        name: 'Simon',
+        name: 'Simon Toblad',
         img: 'simon.png',
         about: (
             <>
@@ -151,7 +167,7 @@ export default function AboutUs() {
     }
 
     const samuel = {
-        name: 'Samuel',
+        name: 'Samuel Westman Granlund',
         img: 'samuel.png',
         about: 'hejhejehejhejhejehjhejhejh',
         workedOn: {

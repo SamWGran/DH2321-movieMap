@@ -10,18 +10,14 @@ export default function Menu({
 
     const legend = (
 		<>
-			<p id="legend-title">Legend</p>
-			<div></div>
 			<p className="legend-text">Budget</p>
-			<img src={legend01}/>
+			<img className='legend-img' src={legend01}/>
 			<p className="legend-text">Revenue</p>
-			<img src={legend02}/>
-			<div></div>
+			<img className='legend-img' src={legend02}/>
 			<a href="#" onClick={() => {
 				document.getElementById('AboutUs').classList.remove('hidden')
             	document.getElementsByClassName('App')[0].classList.add('blurred')
 				}}>About us</a>
-			
 		</>
     )
 

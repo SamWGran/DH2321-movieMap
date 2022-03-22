@@ -127,12 +127,6 @@ export default function App() {
             hidden={hiddenGroups}
         />
     )
-	
-	const legend = (
-		<Legend
-			height={window.innerHeight}
-		/>
-	)
 
     return (
     <>
@@ -145,7 +139,6 @@ export default function App() {
             <div id='tooltip-container' >{renderedTooltip}</div>
         </div>
         <div id='toolbar-container' >{menu}</div>
-		<div id='legend-container' >{legend}</div>
       </div>
       </>
     );

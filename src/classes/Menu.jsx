@@ -2,6 +2,7 @@ import '../styles/moviemapStyles.css'
 import * as d3 from 'd3'
 import {Slider, Box, Grid, Typography, Checkbox, FormControlLabel, Stack} from '@mui/material';
 import React, {useMemo, useState} from 'react'
+import Legend from './Legend'
 import formatDollars from './formatDollars';
 
 function makeGroups(data, groupKey) {
@@ -36,20 +37,31 @@ export default function Menu({
 
     const buttons = useMemo(() => {
             const groups = makeGroups(movies, groupKey);
-
-            return <div style={{height: '20em', overflowY: 'auto'}}>
-                {groups.map(g => 
-                <FormControlLabel
-                label={g}
-                control={<Checkbox
-                    key={g}
-                    checked={!hidden.includes(g)}
-                    onChange={
-                        (event) => {if (event.target.checked) { onShow(g) } else { onHide(g) }}
-                    }
-                />}
-                />
+            const checkboxStyleOverrides = {
+                padding: '10px', 
+                boxSizing: 'border-box', 
+                border: '2px solid #202020', 
+                height: 'auto', 
+                overflowX: 'hidden', 
+                overflowY: 'auto'
+            }
+            return <div style={checkboxStyleOverrides}>
+                <Grid container spacing={0} alignItems="left">
+                {groups.map(g => <Grid item xs={6}>
+                    <FormControlLabel
+                    label={g=='Science Fiction' ? 'Sci-Fi' : g}
+                    control={<Checkbox
+                        sx={{pt:0, pb:0}}
+                        key={g}
+                        checked={!hidden.includes(g)}
+                        onChange={
+                            (event) => {if (event.target.checked) { onShow(g) } else { onHide(g) }}
+                        }
+                    />}
+                    />
+                </Grid>
                 )}
+                </Grid>
             </div>
         },
         [hidden, movies, groupKey]
@@ -88,7 +100,7 @@ export default function Menu({
                 </Typography>
             )
             const header = (
-                <Typography id="roi-slider" gutterBottom>
+                <Typography id="roi-slider" align='center' gutterBottom>
                     Return on Investment
                 </Typography>
             )
@@ -135,7 +147,7 @@ export default function Menu({
                 </Typography>
             )
             const header = (
-                <Typography id="budget-slider" gutterBottom>
+                <Typography id="budget-slider" align='center' gutterBottom>
                     Budget
                 </Typography>
             )
@@ -182,7 +194,7 @@ export default function Menu({
                 </Typography>
             )
             const header = (
-                <Typography id="profit-slider" gutterBottom>
+                <Typography id="profit-slider" align='center' gutterBottom>
                     Profit
                 </Typography>
             )
@@ -229,7 +241,7 @@ export default function Menu({
                 </Typography>
             )
             const header = (
-                <Typography id="revenue-slider" gutterBottom>
+                <Typography id="revenue-slider" align='center' gutterBottom>
                     Revenue
                 </Typography>
             )
@@ -245,14 +257,37 @@ export default function Menu({
         [movies, revenueTick]
     )
 
+    const legend = (
+		<Legend
+			height={window.innerHeight}
+		/>
+	)
+    const sliderStyleOverride = {
+        paddingTop: '10px', 
+        paddingLeft: '20px', 
+        paddingRight: '20px',
+        margin: '3px',
+        width: '100%',
+        boxSizing: 'border-box', 
+        border: '2px solid #202020',
+    }
     const sliders = (
         <Box sx={{m:2}}>
-            <Stack spacing={4} color="white">
-                {budgetSlider}
-                {revenueSlider}
-                {profitSlider}
-                {roiSlider}
+            <Stack alignItems='center' spacing={1} color="white">
+                <div style={sliderStyleOverride}>
+                    {budgetSlider}
+                </div>
+                <div style={sliderStyleOverride}>
+                    {revenueSlider}
+                </div>
+                <div style={sliderStyleOverride}>
+                    {profitSlider}
+                </div>
+                <div style={sliderStyleOverride}>
+                    {roiSlider}
+                </div>
                 {buttons}
+                {legend}
             </Stack>
         </Box>
     )
