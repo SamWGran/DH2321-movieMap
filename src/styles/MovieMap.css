@@ -129,3 +129,12 @@ a {
     overflow: hidden;
     opacity: .8;
 }
+
+.AboutUs-container a {
+    font-size: 1em;
+    text-decoration: none;
+}
+
+.AboutUs-container a:hover {
+    text-decoration: underline;
+}

@@ -17,7 +17,7 @@ export default function AboutUs() {
                     boxSizing:'content-box'
                     }}></div>
                 <div class='about-person-desc'>
-                    <h2>{name}</h2>
+                    <h3 style={{marginTop:'0.5em'}}>{name}</h3>
                     <span>{description}</span>
                 </div>
             </div>
@@ -62,12 +62,15 @@ export default function AboutUs() {
                 {sources}
                 <br/><img style={{paddingTop:'1em'}} src='moviedb.svg'/>
             </div>
-            <div style={{float:'left', width: '75vw', height: '100vh', overflowY: 'auto', boxSizing:'border-box'}}>
-                {lowe}
-                {pontus}
-                {andreas}
-                {simon}
-                {samuel}
+            <div style={{float:'right', width: '74.5vw', height: '100vh', overflowY: 'auto', boxSizing:'border-box'}}>
+                <div>
+                    <h2>Team</h2>
+                    {lowe}
+                    {pontus}
+                    {andreas}
+                    {simon}
+                    {samuel}
+                </div>
             </div>
         </div>
       </div>
