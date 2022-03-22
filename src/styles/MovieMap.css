@@ -63,7 +63,7 @@ body {
     position: fixed;
     top:0;
     left:0;
-    height: 70vh;
+    height: 100vh;
     background-color: #2c2c2c;
     width: 17vw;
 }
@@ -72,24 +72,11 @@ body {
     z-index: 10;
 }
 
-#legend-container {
-	color: white;
-	text-align: center;
-	position: fixed;
-	width: 17vw;
-	height: 30vh;
-	background-color: #2c2c2c;
-	z-index: 11;
-	bottom: 0;
+.legend-img {
 }
 
-#legend-title {
-	font-family: "Roboto", "Helvetica", "Arial", sans-serif;
-	font-weight: 400;
-	font-size: 1rem;
-	line-height: 1.5;
-	letter-spacing: 0.00938em;
-	margin-bottom: 0.35em;
+.legend-text {
+	text-align: center;
 }
 
 img {
@@ -137,4 +124,8 @@ a {
 
 .AboutUs-container a:hover {
     text-decoration: underline;
+}
+
+.close-button:hover {
+    opacity: 0.5;
 }
