@@ -76,10 +76,10 @@ export default function AboutUs() {
         img: 'lowe.png',
         about: <>Hejhejhejhejehhejhee<b>HEJ</b>hej</>,
         workedOn: {
-            frontend: 1,
+            frontend: 7,
             design: 1,
-            backend: 1,
-            research: 1,
+            backend: 3,
+            research: 4,
             manager: 1,
         }
     }
@@ -98,7 +98,7 @@ export default function AboutUs() {
         workedOn: {
             frontend: 6,
             design: 4,
-            backend: 1,
+            backend: 0,
             research: 2,
             manager: 2,
         }
