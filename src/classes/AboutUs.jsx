@@ -1,10 +1,34 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import * as d3 from 'd3'
 import '../styles/MovieMap.css'
+import { height } from '@mui/system'
 
 export default function AboutUs() {
 
-    function aboutPerson(img, name, description) {
+    function responibility(person, small=false) {
+        const name = person.name
+        const total = person.workedOn.frontend + person.workedOn.design + person.workedOn.backend + person.workedOn.research + person.workedOn.manager
+        const height = small?'0.5em':'1.5em'
+        function block(text, size, color) {
+            return <div style={{float:'left',width:(size/total*100)+'%', height:height, backgroundColor:color, textAlign:'center', overflow:'hidden'}}>{small?'':text}</div>
+        }
+        return (
+            <>
+                <div style={small?{}:{paddingBottom: '1em', marginBottom:'2em', borderBottom:'3px', borderBottomStyle:'solid', borderBottomColor:'#D0BDAD', width:'98%'}}>
+                    {small?'':name+':'}
+                    <div style={{color:'#000', height:height}}>
+                        {block('Frontend', person.workedOn.frontend, '#FF5468')}
+                        {block('Design', person.workedOn.design, '#00FF65')}
+                        {block('Backend', person.workedOn.backend, '#FF7742')}
+                        {block('Research', person.workedOn.research, '#FFFF0F')}
+                        {block('Manager', person.workedOn.manager, '#00FFF2')}
+                    </div>
+                </div>
+            </>
+        )
+    }
+
+    function aboutPerson({name, img, about, workedOn}) {
         return (
             <div style={{float:'left', width:'100%',padding:'0.25em', boxSizing:'border-box'}}>
                 <div style={{
@@ -15,10 +39,12 @@ export default function AboutUs() {
                     backgroundSize:'cover',
                     marginRight:'1em',
                     boxSizing:'content-box'
-                    }}></div>
+                    }}>
+                        {responibility({name, img, about, workedOn}, true)}
+                    </div>
                 <div class='about-person-desc'>
                     <h3 style={{marginTop:'0.5em'}}>{name}</h3>
-                    <span>{description}</span>
+                    <span>{about}</span>
                 </div>
             </div>
         )
@@ -42,18 +68,92 @@ export default function AboutUs() {
 
     const button = <div style={{fontSize:'2em', color:'red', fontWeight:'bolder',backgroundColor:'white',borderRadius:'2em',position:'absolute',top:'1rem',left:'1rem',zIndex:'30',width:'1em',height:'1em',textAlign:'center',lineHeight:'0.75em'}}>x</div>
 
-    const lowe = aboutPerson('lowe.png', 'Lowe', <>Hejhejhejhejehhejhee<b>HEJ</b>hej</>)
-    const pontus = aboutPerson('pontus.png', 'Pontus Asp', (
-        <>
-            As of writing (March 2022), I am currently studying my fourth year at KTH. I have been studying information and communication technology on bachelor level and now I am studying computer science, with visualization and interactive graphics as subtrack.
-            <br/><div style={{marginTop:'0.5em', display:'inline-block',borderTop: '2px', borderTopColor:'#D0BDAD', borderTopStyle:'solid'}}>
-                <span>- You can find more information on my website <a href="http://pontusasp.se" target="_blank">pontusasp.se</a>.</span>
-            </div>
-        </>
-    ))
-    const andreas = aboutPerson('andreas.png', 'Andreas SJödin', 'hejhejehejhejhejehjhejhejh')
-    const simon = aboutPerson('simon.png', 'Simon', 'hejhejehejhejhejehjhejhejh')
-    const samuel = aboutPerson('samuel.png', 'Samuel', 'hejhejehejhejhejehjhejhejh')
+    const lowe = {
+        name: 'Lowe',
+        img: 'lowe.png',
+        about: <>Hejhejhejhejehhejhee<b>HEJ</b>hej</>,
+        workedOn: {
+            frontend: 1,
+            design: 1,
+            backend: 1,
+            research: 1,
+            manager: 1,
+        }
+    }
+
+    const pontus = {
+        name: 'Pontus Asp',
+        img: 'pontus.png',
+        about: (
+            <>
+                As of writing (March 2022), I am currently studying my fourth year at KTH. I have been studying information and communication technology on bachelor level and now I am studying computer science, with visualization and interactive graphics as subtrack.
+                <br/><div style={{marginTop:'0.5em', display:'inline-block',borderTop: '2px', borderTopColor:'#D0BDAD', borderTopStyle:'solid'}}>
+                    <span>- You can find more information on my website <a href="http://pontusasp.se" target="_blank">pontusasp.se</a>.</span>
+                </div>
+            </>
+        ),
+        workedOn: {
+            frontend: 6,
+            design: 4,
+            backend: 1,
+            research: 2,
+            manager: 2,
+        }
+    }
+
+    const andreas = {
+        name: 'Andreas',
+        img: 'andreas.png',
+        about: (
+            <>
+                As of writing (March 2022), I am currently studying my fourth year at KTH. I have been studying information and communication technology on bachelor level and now I am studying computer science, with visualization and interactive graphics as subtrack.
+                <br/><div style={{marginTop:'0.5em', display:'inline-block',borderTop: '2px', borderTopColor:'#D0BDAD', borderTopStyle:'solid'}}>
+                    <span>- You can find more information on my <a href="http://github.com/andreassjodin" target="_blank">GitHub Page</a>.</span>
+                </div>
+            </>
+        ),
+        workedOn: {
+            frontend: 5,
+            design: 6,
+            backend: 2,
+            research: 3,
+            manager: 5,
+        }
+    }
+
+    const simon = {
+        name: 'Simon',
+        img: 'simon.png',
+        about: (
+            <>
+                I like design and visualization. Currently I'm studying my fourth year at KTH the master program in ICT Innovation Human Computer Interaction and Design. Before my masters I studied media technology and received my bachelors last year.
+                <br/><div style={{marginTop:'0.5em', display:'inline-block',borderTop: '2px', borderTopColor:'#D0BDAD', borderTopStyle:'solid'}}>
+                    - If you want to know more about me you can visit <a href="http://www.toblad.se/" target="_blank">toblad.se</a>
+                </div>
+            </>
+        ),
+        workedOn: {
+            frontend: 1,
+            design: 3,
+            backend: 0,
+            research: 0,
+            manager: 2,
+        }
+    }
+
+    const samuel = {
+        name: 'Samuel',
+        img: 'samuel.png',
+        about: 'hejhejehejhejhejehjhejhejh',
+        workedOn: {
+            frontend: 1,
+            design: 1,
+            backend: 1,
+            research: 1,
+            manager: 1,
+        }
+    }
+
 
     return (
       <div id='AboutUs' className='hidden'>
@@ -71,12 +171,20 @@ export default function AboutUs() {
             </div>
             <div style={{float:'right', width: '74.5vw', height: '100vh', overflowY: 'auto', boxSizing:'border-box'}}>
                 <div>
-                    <h2>Team</h2>
-                    {lowe}
-                    {pontus}
-                    {andreas}
-                    {simon}
-                    {samuel}
+                    <h2 style={{textAlign:'center'}}>Team</h2>
+                    {aboutPerson(lowe)}
+                    {aboutPerson(pontus)}
+                    {aboutPerson(andreas)}
+                    {aboutPerson(simon)}
+                    {aboutPerson(samuel)}
+                </div>
+                <div>
+                    <h2 style={{textAlign:'center'}}>Responsibility Distribution</h2>
+                    {responibility(lowe)}
+                    {responibility(pontus)}
+                    {responibility(andreas)}
+                    {responibility(simon)}
+                    {responibility(samuel)}
                 </div>
             </div>
         </div>
