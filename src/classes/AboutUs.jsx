@@ -72,9 +72,15 @@ export default function AboutUs() {
     const button = <div style={{fontSize:'2em', color:'red', fontWeight:'bolder',backgroundColor:'white',borderRadius:'2em',position:'absolute',top:'1rem',left:'1rem',zIndex:'30',width:'1em',height:'1em',textAlign:'center',lineHeight:'0.75em'}}>x</div>
 
     const lowe = {
-        name: 'Lowe',
+        name: 'Lowe Bonnevier',
         img: 'lowe.png',
-        about: <>Hejhejhejhejehhejhee<b>HEJ</b>hej</>,
+        about: (
+          <>As of writing (March 2022) I am studying my fourth year at KTH. Both my bachelor's degree and master's degree are in computer science with focus on visualization. On this project I have primarily been working on integrating D3.js with React.
+          <br/>
+          <div style={{marginTop:'0.5em', display:'inline-block',borderTop: '2px', borderTopColor:'#D0BDAD', borderTopStyle:'solid'}}>
+          </div>
+          </>
+        ),
         workedOn: {
             frontend: 7,
             design: 1,
@@ -156,7 +162,6 @@ export default function AboutUs() {
             manager: 1,
         }
     }
-
 
     return (
       <div id='AboutUs' className='hidden'>
