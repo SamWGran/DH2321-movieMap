@@ -6,8 +6,16 @@ export default function AboutUs() {
 
     function aboutPerson(img, name, description) {
         return (
-            <div style={{float:'left', width:'100%'}}>
-                <div style={{float:'left'}}><img src={img}/></div>
+            <div style={{float:'left', width:'100%',padding:'0.25em', boxSizing:'border-box'}}>
+                <div style={{
+                    float:'left',
+                    width:'20vh',
+                    height:'20vh',
+                    background:'url('+img+')',
+                    backgroundSize:'cover',
+                    marginRight:'1em',
+                    boxSizing:'content-box'
+                    }}></div>
                 <div class='about-person-desc'>
                     <h2>{name}</h2>
                     <span>{description}</span>
@@ -34,9 +42,11 @@ export default function AboutUs() {
 
     const button = <div style={{fontSize:'2em', color:'red', fontWeight:'bolder',backgroundColor:'white',borderRadius:'2em',position:'absolute',top:'1rem',left:'1rem',zIndex:'30',width:'1em',height:'1em',textAlign:'center',lineHeight:'0.75em'}}>x</div>
 
-    const pontus = aboutPerson('logo512.png', 'Pontus Asp', <>Hejhejhejhejehhejhee<b>HEJ</b>hej</>)
-    const pontus1 = aboutPerson('logo512.png', 'Pontus Asp 1', 'hejhejehejhejhejehjhejhejh')
-    const pontus2 = aboutPerson('logo512.png', 'Pontus Asp 2', 'hejhejehejhejhejehjhejhejh')
+    const lowe = aboutPerson('lowe.png', 'Lowe', <>Hejhejhejhejehhejhee<b>HEJ</b>hej</>)
+    const pontus = aboutPerson('pontus.png', 'Pontus Asp', 'hejhejehejhejhejehjhejhejh')
+    const andreas = aboutPerson('andreas.png', 'Andreas SJödin', 'hejhejehejhejhejehjhejhejh')
+    const simon = aboutPerson('simon.png', 'Simon', 'hejhejehejhejhejehjhejhejh')
+    const samuel = aboutPerson('samuel.png', 'Samuel', 'hejhejehejhejhejehjhejhejh')
 
     return (
       <div id='AboutUs' className='hidden'>
@@ -45,7 +55,7 @@ export default function AboutUs() {
             document.getElementsByClassName('App')[0].classList.remove('blurred')
             }}>{button}</div>
         <div className='AboutUs-container'>
-            <div style={{float:'left', width:'25vw', padding: '2em', boxSizing:'border-box'}}>
+            <div style={{float:'left', width:'25vw', padding: '2em', boxSizing:'border-box', height:'100vh', overflowY:'auto'}}>
                 {aboutTheProject}
                 {learningObjectivesReached}
                 {movieApi}
@@ -53,9 +63,11 @@ export default function AboutUs() {
                 <br/><img style={{paddingTop:'1em'}} src='moviedb.svg'/>
             </div>
             <div style={{float:'left', width: '75vw', height: '100vh', overflowY: 'auto', boxSizing:'border-box'}}>
+                {lowe}
                 {pontus}
-                {pontus1}
-                {pontus2}
+                {andreas}
+                {simon}
+                {samuel}
             </div>
         </div>
       </div>
