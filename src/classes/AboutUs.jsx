@@ -14,9 +14,9 @@ export default function AboutUs() {
         }
         return (
             <>
-                <div style={small?{}:{paddingBottom: '1em', marginBottom:'2em', borderBottom:'3px', borderBottomStyle:'solid', borderBottomColor:'#D0BDAD', width:'98%'}}>
+                <div style={small?{}:{marginBottom:'2em', width:'98%'}}>
                     {small?'':name+':'}
-                    <div style={{color:'#000', height:height}}>
+                    <div style={small?{color:'#000', height:height}:{color:'#000', height:height, border: '3px solid #D0BDAD'}}>
                         {block('Frontend', person.workedOn.frontend, '#FF5468')}
                         {block('Design', person.workedOn.design, '#00FF65')}
                         {block('Backend', person.workedOn.backend, '#FF7742')}
@@ -38,7 +38,10 @@ export default function AboutUs() {
                     background:'url('+img+')',
                     backgroundSize:'cover',
                     marginRight:'1em',
-                    boxSizing:'content-box'
+                    boxSizing:'content-box',
+                    border: '1px solid #D0BDAD',
+                    borderRadius: '4px',
+                    overflow: 'hidden'
                     }}>
                         {responibility({name, img, about, workedOn}, true)}
                     </div>
