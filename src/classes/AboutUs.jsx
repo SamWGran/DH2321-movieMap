@@ -43,7 +43,14 @@ export default function AboutUs() {
     const button = <div style={{fontSize:'2em', color:'red', fontWeight:'bolder',backgroundColor:'white',borderRadius:'2em',position:'absolute',top:'1rem',left:'1rem',zIndex:'30',width:'1em',height:'1em',textAlign:'center',lineHeight:'0.75em'}}>x</div>
 
     const lowe = aboutPerson('lowe.png', 'Lowe', <>Hejhejhejhejehhejhee<b>HEJ</b>hej</>)
-    const pontus = aboutPerson('pontus.png', 'Pontus Asp', 'hejhejehejhejhejehjhejhejh')
+    const pontus = aboutPerson('pontus.png', 'Pontus Asp', (
+        <>
+            As of writing (March 2022), I am currently studying my fourth year at KTH. I have been studying information and communication technology on bachelor level and now I am studying computer science, with visualization and interactive graphics as subtrack.
+            <br/><div style={{marginTop:'0.5em', display:'inline-block',borderTop: '2px', borderTopColor:'#D0BDAD', borderTopStyle:'solid'}}>
+                <span>- You can find more information on my website <a href="http://pontusasp.se" target="_blank">pontusasp.se</a>.</span>
+            </div>
+        </>
+    ))
     const andreas = aboutPerson('andreas.png', 'Andreas SJödin', 'hejhejehejhejhejehjhejhejh')
     const simon = aboutPerson('simon.png', 'Simon', 'hejhejehejhejhejehjhejhejh')
     const samuel = aboutPerson('samuel.png', 'Samuel', 'hejhejehejhejhejehjhejhejh')
