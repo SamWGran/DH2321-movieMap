@@ -8,6 +8,7 @@ import sample from '../data/sampleData'
 import Menu from './Menu'
 import Legend from './Legend'
 import {deepEquals} from 'deep-equals'
+import AboutUs from './AboutUs'
 
 const defaultMovies = extrapolate(sample)
 const defaultGradient = ["#bb12bb", "#12ee12"]
@@ -134,6 +135,10 @@ export default function App() {
 	)
 
     return (
+    <>
+      <div>
+        <AboutUs/>
+      </div>
       <div className='App'>
         <div>
             <div id='moviemap-container' >{renderedMovieMap}</div>
@@ -142,6 +147,7 @@ export default function App() {
         <div id='toolbar-container' >{menu}</div>
 		<div id='legend-container' >{legend}</div>
       </div>
+      </>
     );
 }
 

@@ -17,7 +17,10 @@ export default function Menu({
 			<p className="legend-text">Revenue</p>
 			<img src={legend02}/>
 			<div></div>
-			<a href="#">About us</a>
+			<a href="#" onClick={() => {
+				document.getElementById('AboutUs').classList.remove('hidden')
+            	document.getElementsByClassName('App')[0].classList.add('blurred')
+				}}>About us</a>
 			
 		</>
     )
