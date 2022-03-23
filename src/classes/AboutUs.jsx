@@ -56,16 +56,16 @@ export default function AboutUs() {
         )
     }
 
-    const aboutTheProject = <><h2>About The Project</h2><span>It is an interactive tool for exploring economic data of movies, with inspiration from FinViz, 
+    const aboutTheProject = <><h2>About The Project</h2><span>This app, movieMap, is an interactive tool for exploring economic data of movies, with inspiration from FinViz, 
     Board game wizard and similar projects it has been designed to focus on giving an instant overview of successes and failures 
     within the industry. Shown movies are longer than 40 minutes, with atleast 10 user ratings and were released between 
-    2018-01-01 and 2022-01-01</span></>
+    2018-01-01 and 2022-01-01.</span></>
 
-    const learningObjectivesReached = <><h2>Learning Objectives Reached</h2><span>Learned D3 + React (Web Development)<br/>
-    Group dynamics<br/>
-    Iteratively improving a product<br/>
-    Recieving and implementing feedback and constructive criticism<br/>
-    Creating and presenting engaging demos</span></>
+    const learningObjectivesReached = <><h2>Learning Objectives Reached</h2><span>- Learned D3 + React (Web Development)<br/>
+    - Group dynamics<br/>
+    - Iteratively improving a product<br/>
+    - Recieving and implementing feedback and constructive criticism<br/>
+    - Creating and presenting engaging demos</span></>
 
     const movieApi = <><h2>Movie API</h2><span>This product uses the TMDB API but is not endorsed or certified by TMDB.</span></>
 
@@ -182,11 +182,11 @@ export default function AboutUs() {
             </>
         ),
         workedOn: {
-            frontend: 3,
+            frontend: 2,
             design: 3,
             backend: 4,
             research: 2,
-            manager: 6,
+            manager: 7,
         } //front: 3, design: 3, back: 4, research: 2, manage: 6 
     }
 
@@ -206,7 +206,7 @@ export default function AboutUs() {
             </div>
             <div style={{float:'right', width: '74.5vw', height: '100vh', overflowY: 'auto', boxSizing:'border-box'}}>
                 <div>
-                    <h2 style={{textAlign:'center'}}>Team</h2>
+                    <h1 style={{textAlign:'center'}}>Team</h1>
                     {aboutPerson(lowe)}
                     {aboutPerson(pontus)}
                     {aboutPerson(andreas)}

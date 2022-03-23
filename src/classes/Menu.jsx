@@ -273,6 +273,7 @@ export default function Menu({
     }
     const sliders = (
         <Box sx={{m:2}}>
+            <a style={{textAlign:'center', fontSize:'0.8rem', display:'block', border:'2px solid #202020', textDecoration:'none'}} href="#" onClick={()=>{window.location.reload()}}>Reset All</a>
             <Stack alignItems='center' spacing={1} color="white">
                 <div style={sliderStyleOverride}>
                     {budgetSlider}
