@@ -10,7 +10,10 @@ export default function AboutUs() {
         const total = person.workedOn.frontend + person.workedOn.design + person.workedOn.backend + person.workedOn.research + person.workedOn.manager
         const height = small?'0.5em':'1.5em'
         function block(text, size, color) {
-            return <div style={{float:'left',width:(size/total*100)+'%', height:height, backgroundColor:color, textAlign:'center', overflow:'hidden'}}>{small?'':text}</div>
+            if (small)
+                return <div title={text} style={{float:'left',width:(size/total*100)+'%', height:height, backgroundColor:color, textAlign:'center', overflow:'hidden'}}></div>
+            else
+                return <div style={{float:'left',width:(size/total*100)+'%', height:height, backgroundColor:color, textAlign:'center', overflow:'hidden'}}>{text}</div>
         }
         return (
             <>
@@ -169,14 +172,22 @@ export default function AboutUs() {
     const samuel = {
         name: 'Samuel Westman Granlund',
         img: 'samuel.png',
-        about: 'hejhejehejhejhejehjhejhejh',
+        about: (
+            <>
+                I’m currently on the second and final year of my masters in Interactive Media Technology with a focus of visualization. In this project I focused on project planning and structure, but also supported with development of the frontend and the dataset.
+                <br/><div style={{marginTop:'0.5em', display:'inline-block',borderTop: '2px', borderTopColor:'#D0BDAD', borderTopStyle:'solid'}}>
+                    - My links: <a href="https://www.linkedin.com/in/samuel-westman-granlund-405297173/" target="_blank">https://www.linkedin.com/in/samuel-westman-granlund-405297173/</a> and <a href="https://github.com/SamWGran" target="_blank">https://github.com/SamWGran</a>
+                </div> 
+
+            </>
+        ),
         workedOn: {
-            frontend: 1,
-            design: 1,
-            backend: 1,
-            research: 1,
-            manager: 1,
-        }
+            frontend: 3,
+            design: 3,
+            backend: 4,
+            research: 2,
+            manager: 6,
+        } //front: 3, design: 3, back: 4, research: 2, manage: 6 
     }
 
     return (
