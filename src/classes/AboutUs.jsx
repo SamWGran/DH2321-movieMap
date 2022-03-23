@@ -221,6 +221,11 @@ export default function AboutUs() {
                     {responibility(simon)}
                     {responibility(samuel)}
                 </div>
+				<div style={{display: 'flex', justifyContent: 'center'}}>
+					<div style={{background: '#b7b59b', margin: '10px', padding: '10px', borderRadius: '10px'}}>
+						<iframe width="1060" height="615" src="https://www.youtube.com/embed/029lNRoR9AQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+					</div>
+				</div>
             </div>
         </div>
       </div>
